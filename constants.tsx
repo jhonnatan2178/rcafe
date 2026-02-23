@@ -256,7 +256,7 @@ python -c "import geopandas; print(geopandas.__version__)"
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-21",
-    image: "/PUBLIC/images/tutorials/vector.jpg",
+    image: "images/tutorials/vector.jpg",
     content: `
 # Vector vs Raster
 
