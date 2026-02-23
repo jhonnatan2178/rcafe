@@ -1,15 +1,19 @@
 import React from 'react';
 import { Layout } from './components/Layout';
-import { TutorialCard } from './components/TutorialContent';
+import { TutorialCard } from './components/TutorialCard';
 import { TUTORIALS } from './constants';
 import { Routes, Route, Link } from "react-router-dom";
 import TutorialsPage from "./components/TutorialsPage";
+import TutorialPage from "./components/TutorialPage";
 
 function HomePage() {
 
   const latestTutorials = [...TUTORIALS]
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())  
-    .reverse()
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+    )
     .slice(0, 2);
 
   return (
@@ -48,7 +52,7 @@ function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {latestTutorials.map((tutorial: any) => (
+          {latestTutorials.map((tutorial) => (
             <TutorialCard
               key={tutorial.id}
               tutorial={tutorial}
@@ -67,6 +71,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/tutorials" element={<TutorialsPage />} />
+        <Route path="/tutorial/:id" element={<TutorialPage />} />
       </Routes>
     </Layout>
   );
