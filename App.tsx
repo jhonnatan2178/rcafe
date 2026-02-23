@@ -1,10 +1,12 @@
-import React from 'react';
-import { Layout } from './components/Layout';
-import { TutorialCard } from './components/TutorialCard';
-import { TUTORIALS } from './constants';
+import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
+
+import { Layout } from "./components/Layout";
+import { TutorialCard } from "./components/TutorialCard";
 import TutorialsPage from "./components/TutorialsPage";
 import TutorialPage from "./components/TutorialPage";
+
+import { TUTORIALS } from "./constants";
 
 function HomePage() {
 
@@ -18,31 +20,54 @@ function HomePage() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="bg-emerald-950 text-white py-24 px-6 min-h-[600px] flex items-center">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* ================= HERO CON VIDEO ================= */}
+      <section className="relative min-h-[600px] flex items-center overflow-hidden">
 
-          <div>
-            <h2 className="text-5xl font-extrabold mb-6 leading-tight">
-              Master GIS for <span className="text-emerald-400">Environment & Risk</span>
+        {/* VIDEO DE FONDO */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/hero.mp4" type="video/mp4" />
+        </video>
+        {/* IMAGEN FALLBACK (MÓVIL + SI FALLA VIDEO) */}
+        <div
+          className="absolute inset-0 bg-cover bg-center md:hidden"
+          style={{ backgroundImage: "url(/images/tutorials/spatial.jpg)" }}
+        />
+        {/* OVERLAY OSCURO */}
+        <div className="absolute inset-0 bg-emerald-950/70" />
+
+        {/* CONTENIDO */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="max-w-xl">
+
+            <h2 className="text-5xl font-extrabold mb-6 leading-tight text-white">
+              Master GIS for{" "}
+              <span className="text-emerald-400">
+                Environment & Risk
+              </span>
             </h2>
 
-            <p className="text-xl text-emerald-100 mb-8 max-w-xl">
+            <p className="text-xl text-emerald-100 mb-8">
               Step-by-step tutoring in R and Python for environmental modeling.
             </p>
 
             <Link
               to="/tutorials"
-              className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold px-8 py-4 rounded-xl transition-all shadow-lg"
+              className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold px-8 py-4 rounded-xl transition-all shadow-lg inline-block"
             >
               Explore Tutorials
             </Link>
-          </div>
 
+          </div>
         </div>
       </section>
 
-      {/* LATEST TUTORIALS */}
+      {/* ================= LATEST TUTORIALS ================= */}
       <section className="max-w-7xl mx-auto py-20 px-6">
 
         <div className="mb-12">
