@@ -25,7 +25,7 @@ If you're new to the world of GIS, you're probably wondering:
   <li style="text-align:center;">What tools should I learn?</li>
   <li style="text-align:center;">Which language is better?</li>
 </ul>
-
+<div>&nbsp;</div>
 <p>
 There are extremely powerful tools that allow high-level geographic analysis —
 from satellite image processing to spatial statistics and environmental modeling.
