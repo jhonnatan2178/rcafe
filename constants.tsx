@@ -18,11 +18,13 @@ export const TUTORIALS: TutorialSection[] = [
     content: `
 FOUNDATIONS OF GIS IN PYTHON & R
 
-If you're new to the world of GIS, you're probably wondering:
+<p>If you're new to the world of GIS, you're probably wondering:</p>
 
-Where do I start?
-What tools should I learn?
-Which language is better?
+<ul>
+  <li>Where do I start?</li>
+  <li>What tools should I learn?</li>
+  <li>Which language is better?</li>
+</ul>
 
 There are extremely powerful tools that allow high-level geographic analysis — from satellite image processing to spatial statistics and environmental modeling.
 
