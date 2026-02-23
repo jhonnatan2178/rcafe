@@ -14,7 +14,7 @@ export const TUTORIALS: TutorialSection[] = [
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-20",
-    image: "/PUBLIC/images/tutorials/foundations.jpg",
+    image: "/public/images/tutorials/foundations.jpg",
     content: `
 FOUNDATIONS OF GIS IN PYTHON & R
 
@@ -122,6 +122,7 @@ Geospatial libraries depend on complex system-level tools like GDAL. Conda-forge
 Now let’s understand what each library does.
 
 1. numpy  
+<img src="/images/tutorials/spatial.jpg" style="width:100%; margin:20px 0;" />
 The foundation of numerical computing in Python.  
 Used for array operations, raster math, and scientific calculations.
 
