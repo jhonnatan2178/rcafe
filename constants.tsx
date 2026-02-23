@@ -47,9 +47,10 @@ Its versatility and massive ecosystem of libraries allow you to build automation
 pipelines, process satellite imagery, perform spatial analysis, and even integrate
 machine learning models.
 </p>
-<img
-  src="/images/tutorials/spatial.jpg"
-  class="img-right"
+<img 
+  src="/images/tutorials/spatial.jpg" 
+  class="img-right" 
+  style="width:300px; height:auto; float:right; margin:10px;" 
 />
 <div>&nbsp;</div>
 <p>
