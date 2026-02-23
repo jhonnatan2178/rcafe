@@ -122,7 +122,9 @@ Geospatial libraries depend on complex system-level tools like GDAL. Conda-forge
 Now let’s understand what each library does.
 
 1. numpy  
-<img src="/images/tutorials/spatial.jpg" style="width:100%; margin:20px 0;" />
+<img src="/images/tutorials/spatial.jpg"
+     class="mx-auto w-3/5 rounded-xl my-10" />
+     
 The foundation of numerical computing in Python.  
 Used for array operations, raster math, and scientific calculations.
 
@@ -133,6 +135,15 @@ print(arr.mean())
 
 2. pandas  
 Used for tabular data manipulation — CSV files, time series, satellite statistics.
+
+<h2>1. Why environments matter</h2>
+
+<p>Reproducibility is critical in GIS and scientific computing.</p>
+
+<img src="/images/tutorials/wildfire.jpg"
+     class="mx-auto w-3/5 rounded-xl my-10" />
+
+<p>Different projects require different library versions...</p>
 
 Example:
 import pandas as pd
@@ -257,7 +268,7 @@ python -c "import geopandas; print(geopandas.__version__)"
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-21",
-    image: "images/tutorials/vector.jpg",
+    image: "/images/tutorials/vector.jpg",
     content: `
 # Vector vs Raster
 
@@ -324,7 +335,7 @@ gdf = gdf.to_crs("EPSG:4326")
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-23",
-    image: "/PUBLIC/images/tutorials/spatial.jpg",
+    image: "/images/tutorials/spatial.jpg",
     content: `
 # First Spatial Analysis
 
