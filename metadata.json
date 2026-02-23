@@ -1,0 +1,8 @@
+{
+  "name": "EcoGeo Tutor: GIS & Remote Sensing Mastery",
+  "description": "An interactive tutoring platform specializing in GIS and Remote Sensing for environmental and risk analysis using R and Python, featuring an AI-powered tutor and cinematic AI-generated geospatial backgrounds.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
