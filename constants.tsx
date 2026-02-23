@@ -21,7 +21,7 @@ If you're new to the world of GIS, you're probably wondering:
 </p>
 
 <ul>
-  <li>Where do I start?</li>
+  <li>style="text-align:center;"Where do I start?</li>
   <li>What tools should I learn?</li>
   <li>Which language is better?</li>
 </ul>
