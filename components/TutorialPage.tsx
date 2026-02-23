@@ -25,9 +25,15 @@ function TutorialPage() {
         {tutorial.category} • {tutorial.level}
       </p>
 
-      <div className="prose max-w-none whitespace-pre-line">
-        {tutorial.content}
-      </div>
+      <div
+        className="
+          prose prose-slate max-w-3xl mx-auto
+          prose-img:rounded-xl
+          prose-img:mx-auto
+          prose-img:max-w-full
+        "
+        dangerouslySetInnerHTML={{ __html: tutorial.content }}
+      />
 
       {tutorial.codeSnippet && (
         <pre className="bg-slate-900 text-emerald-300 p-6 rounded-xl mt-8 overflow-x-auto">
