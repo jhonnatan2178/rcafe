@@ -1,39 +1,48 @@
-import React from "react";
 import { TUTORIALS } from "../constants";
-import { TutorialCard } from "./TutorialContent";
+import { TutorialCard } from "./TutorialCard";
 
-export default function TutorialsPage() {
+function TutorialsPage() {
 
-  const categories = [...new Set(TUTORIALS.map(t => t.category))];
+  // Obtener categorías únicas
+  const categories = Array.from(
+    new Set(TUTORIALS.map(t => t.category))
+  );
 
   return (
-    <div className="max-w-7xl mx-auto py-20 px-6">
+    <section className="max-w-7xl mx-auto py-20 px-6">
 
-      <h1 className="text-4xl font-bold mb-16">
-        All Tutorials
+      <h1 className="text-4xl font-bold mb-16 text-slate-900">
+        Aplicaciones GIS
       </h1>
 
-      {categories.map((category) => (
-        <div key={category} className="mb-16">
+      {categories.map(category => {
 
-          <h2 className="text-2xl font-semibold mb-6">
-            {category}
-          </h2>
+        const filteredTutorials = TUTORIALS.filter(
+          t => t.category === category
+        );
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {TUTORIALS
-              .filter(t => t.category === category)
-              .map(tutorial => (
+        return (
+          <div key={category} className="mb-20">
+
+            <h2 className="text-2xl font-bold mb-8 text-emerald-700">
+              {category}
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {filteredTutorials.map(tutorial => (
                 <TutorialCard
                   key={tutorial.id}
                   tutorial={tutorial}
                 />
               ))}
+            </div>
+
           </div>
+        );
+      })}
 
-        </div>
-      ))}
-
-    </div>
+    </section>
   );
 }
+
+export default TutorialsPage;
