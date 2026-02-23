@@ -21,6 +21,7 @@ export interface TutorialSection {
   category: string;
   level: string;
   createdAt: string;
+  image?: string;
 }
 
 export interface ChatMessage {

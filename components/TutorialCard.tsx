@@ -4,20 +4,27 @@ interface Tutorial {
   id: string;
   title: string;
   date: string;
-  image: string;
+  image?: string; // 👈 opcional por seguridad
   description: string;
 }
 
 export function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
   return (
-    <div className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-all">
+    <div className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300">
 
       {/* Imagen */}
-      <img
-        src={tutorial.image}
-        alt={tutorial.title}
-        className="w-full h-56 object-cover"
-      />
+      {tutorial.image && (
+        <div className="relative">
+          <img
+            src={tutorial.image}
+            alt={tutorial.title}
+            className="w-full h-56 object-cover"
+          />
+
+          {/* Overlay opcional elegante */}
+          <div className="absolute inset-0 bg-black/10" />
+        </div>
+      )}
 
       {/* Contenido */}
       <div className="p-6">
@@ -36,7 +43,7 @@ export function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
 
         <Link
           to={`/tutorial/${tutorial.id}`}
-          className="text-emerald-600 font-semibold hover:underline"
+          className="inline-block text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
         >
           Seguir leyendo →
         </Link>
