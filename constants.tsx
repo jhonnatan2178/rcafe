@@ -14,8 +14,9 @@ export const TUTORIALS: TutorialSection[] = [
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-20",
+    image: "C:\rcafe\PUBLIC\images\tutorials\foundations.jpg",
     content: `
-# Foundations of GIS
+Foundations of GIS
 
 This tutorial establishes the professional baseline required for spatial analysis.
 
