@@ -16,9 +16,9 @@ export const TUTORIALS: TutorialSection[] = [
     createdAt: "2026-02-20",
     image: "/images/tutorials/foundations.jpg",
     content: `
-FOUNDATIONS OF GIS IN PYTHON & R
-
-<p>If you're new to the world of GIS, you're probably wondering:</p>
+<p>
+If you're new to the world of GIS, you're probably wondering:
+</p>
 
 <ul>
   <li>Where do I start?</li>
@@ -26,24 +26,52 @@ FOUNDATIONS OF GIS IN PYTHON & R
   <li>Which language is better?</li>
 </ul>
 
-There are extremely powerful tools that allow high-level geographic analysis — from satellite image processing to spatial statistics and environmental modeling.
+<p>
+There are extremely powerful tools that allow high-level geographic analysis —
+from satellite image processing to spatial statistics and environmental modeling.
+</p>
 
-In this portal, we focus on open-source software and the two main programming languages that dominate modern GIS workflows: Python and R.
+<p>
+In this portal, we focus on <strong>open-source software</strong> and the two main
+programming languages that dominate modern GIS workflows:
+<strong>Python</strong> and <strong>R</strong>.
+</p>
 
-----------------------------------------------------
-Why don’t we just choose one?
-----------------------------------------------------
+<h2>Why don’t we just choose one?</h2>
 
-Python is arguably the most well-known programming language in the world. Its versatility and massive ecosystem of libraries allow you to build automation pipelines, process satellite imagery, perform spatial analysis, and even integrate machine learning models.
+<p>
+Python is arguably the most well-known programming language in the world.
+Its versatility and massive ecosystem of libraries allow you to build automation
+pipelines, process satellite imagery, perform spatial analysis, and even integrate
+machine learning models.
+</p>
 
-R, however, stands out for its deeply integrated statistical modeling capabilities. It was built by statisticians, and that foundation makes it exceptionally strong for ecological modeling, environmental analysis, and advanced data exploration.
+<p>
+R, however, stands out for its deeply integrated statistical modeling capabilities.
+It was built by statisticians, and that foundation makes it exceptionally strong
+for ecological modeling, environmental analysis, and advanced data exploration.
+</p>
 
+<p>
 So the choice depends on your mindset:
+</p>
 
-• If you want automation workflows, scalable systems, and powerful machine learning tools — welcome to Team Slytherin (the snake 🐍).  
-• If you enjoy statistics, elegant visualizations, and structured analytical thinking — welcome to Team Geek 🤓.
+<ul>
+  <li>
+    <strong>Python</strong> — If you want automation workflows, scalable systems,
+    and powerful machine learning tools — welcome to
+    <strong>Team Slytherin 🐍</strong>.
+  </li>
+  <li>
+    <strong>R</strong> — If you enjoy statistics, elegant visualizations, and
+    structured analytical thinking — welcome to
+    <strong>Team Geek 🤓</strong>.
+  </li>
+</ul>
 
-The good news? You don’t have to choose.
+<p>
+<strong>The good news?</strong> You don’t have to choose.
+</p>
 
 Professional GIS analysts often use both.
 
