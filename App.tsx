@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout } from './components/Layout';
-import { AITutor } from './components/AITutor';
+// import { AITutor } from './components/AITutor';
 import { TutorialCard } from './components/TutorialContent';
 import { TUTORIALS } from './constants';
 
@@ -93,7 +93,7 @@ function App() {
         <div className="lg:sticky lg:top-24 h-fit space-y-8">
 
           {/* SAFE RENDER */}
-          {AITutor ? <AITutor /> : null}
+          {/*<AITutor /> */}
 
           <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <h4 className="font-bold text-slate-900 mb-4">
