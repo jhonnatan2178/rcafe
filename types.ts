@@ -15,10 +15,12 @@ export interface TutorialSection {
   id: string;
   title: string;
   description: string;
+  language: Language;
   content: string;
   codeSnippet: string;
-  language: Language;
-  mapData?: MapData;
+  category: string;
+  level: string;
+  createdAt: string;
 }
 
 export interface ChatMessage {
