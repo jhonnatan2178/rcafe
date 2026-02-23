@@ -187,54 +187,46 @@ import geopandas as gpd
 gdf = gpd.read_file("boundary.shp")
 gdf.plot()
 </code></pre>
-----------------------------------------
-R → renv
-----------------------------------------
 
-Step 1 — Install R:
-Download from https://cran.r-project.org/
+<p><strong>Step 1 — Install R:</strong><br>
+  Download from <a href="https://cran.r-project.org/" target="_blank">CRAN official site</a></p>
 
-Step 2 — Install RStudio (recommended):
-Download from https://posit.co/
+  <p><strong>Step 2 — Install RStudio (recommended):</strong><br>
+  Download from <a href="https://posit.co/" target="_blank">Posit (RStudio)</a></p>
 
-Step 3 — Initialize a project environment:
+  <p><strong>Step 3 — Initialize a project environment:</strong></p>
 
-Inside R:
+  <div class="code-block">
+<pre><code>install.packages("renv")
+renv::init()
+</code></pre>
+  </div>
 
-install.packages("renv")  
-renv::init()  
+  <p>The <strong>renv</strong> package locks your project’s package versions, ensuring full reproducibility.</p>
 
-The renv package locks your project’s package versions, ensuring full reproducibility.
+  <h2>2. INSTALLING CORE GIS LIBRARIES</h2>
 
-====================================================
-2. INSTALLING CORE GIS LIBRARIES
-====================================================
+  <h3>PYTHON LIBRARIES</h3>
 
-----------------------------------------
-PYTHON LIBRARIES
-----------------------------------------
+  <p>Install using conda (recommended for geospatial):</p>
 
-Install using conda (recommended for geospatial):
+  <div class="code-block">
+<pre><code>conda install -c conda-forge geopandas rasterio shapely matplotlib pandas numpy
+</code></pre>
+  </div>
 
-conda install -c conda-forge geopandas rasterio shapely matplotlib pandas numpy
+  <p><strong>Why conda-forge?</strong><br>
+  Geospatial libraries depend on complex system-level tools like GDAL. Conda-forge provides precompiled binaries, preventing installation errors.</p>
 
-Why conda-forge?
+  <h3>NumPy</h3>
+  <img src="/images/tutorials/spatial.jpg" alt="Spatial tutorial image" />
 
-Geospatial libraries depend on complex system-level tools like GDAL. Conda-forge provides precompiled binaries, preventing installation errors.
+  <p>The foundation of numerical computing in Python.<br>
+  Used for array operations, raster math, and scientific calculations.</p>
 
-Now let’s understand what each library does.
-
-1. numpy  
-<img src="/images/tutorials/spatial.jpg"
-     class="mx-auto w-3/5 rounded-xl my-10" />
-     
-The foundation of numerical computing in Python.  
-Used for array operations, raster math, and scientific calculations.
-
-Example:
-<div style="background-color:#1e1e1e; color:#d4d4d4; padding:15px; border-radius:8px; font-family:monospace;">
-<pre><code>
-import numpy as np
+  <p><strong>Example:</strong></p>
+  <div class="code-block">
+<pre><code>import numpy as np
 
 # Crear un arreglo simple
 arr = np.array([1, 2, 3, 4, 5])
@@ -242,50 +234,56 @@ arr = np.array([1, 2, 3, 4, 5])
 # Calcular la media
 print(np.mean(arr))
 </code></pre>
-</div>
+  </div>
 
+  <h3>Pandas</h3>
+  <p>Used for tabular data manipulation — CSV files, time series, satellite statistics.</p>
 
-2. pandas  
-Used for tabular data manipulation — CSV files, time series, satellite statistics.
+  <h2>1. Why environments matter</h2>
+  <p>Reproducibility is critical in GIS and scientific computing.</p>
 
-<h2>1. Why environments matter</h2>
+  <img src="/images/tutorials/wildfire.jpg" alt="Wildfire tutorial image" />
 
-<p>Reproducibility is critical in GIS and scientific computing.</p>
+  <p>Different projects require different library versions...</p>
 
-<img src="/images/tutorials/wildfire.jpg"
-     class="mx-auto w-3/5 rounded-xl my-10" />
-
-<p>Different projects require different library versions...</p>
-
-Example:
-import pandas as pd
+  <p><strong>Example:</strong></p>
+  <div class="code-block">
+<pre><code>import pandas as pd
 df = pd.read_csv("data.csv")
 print(df.head())
+</code></pre>
+  </div>
 
-3. geopandas  
-Extends pandas to handle spatial vector data (Shapefiles, GeoJSON, spatial joins, buffers).
+  <h3>GeoPandas</h3>
+  <p>Extends pandas to handle spatial vector data (Shapefiles, GeoJSON, spatial joins, buffers).</p>
 
-Example:
-import geopandas as gpd
+  <div class="code-block">
+<pre><code>import geopandas as gpd
 gdf = gpd.read_file("boundary.shp")
 gdf.plot()
+</code></pre>
+  </div>
 
-4. shapely  
-Handles geometric operations like buffering, intersection, and distance calculations.
+  <h3>Shapely</h3>
+  <p>Handles geometric operations like buffering, intersection, and distance calculations.</p>
 
-Example:
-from shapely.geometry import Point
+  <div class="code-block">
+<pre><code>from shapely.geometry import Point
 p = Point(10, 5)
 buffered = p.buffer(100)
+</code></pre>
+  </div>
 
-5. rasterio  
-Used for reading and processing raster data (GeoTIFF, satellite imagery).
+  <h3>Rasterio</h3>
+  <p>Used for reading and processing raster data (GeoTIFF, satellite imagery).</p>
 
-Example:
-import rasterio
+  <div class="code-block">
+<pre><code>import rasterio
 with rasterio.open("image.tif") as src:
     band1 = src.read(1)
     print(band1.shape)
+</code></pre>
+  </div>
 
 ----------------------------------------
 R LIBRARIES
