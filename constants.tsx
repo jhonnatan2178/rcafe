@@ -48,7 +48,7 @@ pipelines, process satellite imagery, perform spatial analysis, and even integra
 machine learning models.
 </p>
 <img 
-  src="/images/tutorials/spatial.jpg" 
+  src="/images/tutorials/rvspython.jpg" 
   class="img-right" 
   style="width:300px; height:auto; float:right; margin:10px;" 
 />
@@ -77,7 +77,9 @@ So the choice depends on your mindset:
 </ul>
 
 <p>
-<strong>The good news?</strong> You don’t have to choose.
+<div>&nbsp;</div>
+<strong>The good news???</strong> You don’t have to choose.
+<div>&nbsp;</div>
 </p>
 
 Professional GIS analysts often use both.
@@ -85,12 +87,14 @@ Professional GIS analysts often use both.
 In this tutorial, we’ll establish the professional baseline required for spatial analysis.  
 A correct setup is not optional — it determines reproducibility, stability, and performance.
 
-<h2>1. Why environments matter</h2>
+<h2><strong>1. Why environments matter?</strong></h2>
 
 <p>
+<div>&nbsp;</div>
 Reproducibility is critical in GIS and scientific computing.
 Different projects require different library versions, and installing
 everything globally almost always leads to problems.
+<div>&nbsp;</div>
 </p>
 
 <ul>
@@ -101,17 +105,21 @@ everything globally almost always leads to problems.
 </ul>
 
 <p>
-The solution is simple and professional: isolated environments.
+<div>&nbsp;</div>
+The solution is simple and professional: <strong>isolated environments.</strong>
+<div>&nbsp;</div>
 </p>
 
-<h3>Python environments with Conda</h3>
+<h3><strong>Python environments with Conda</strong></h3>
 
 <p>
+<div>&nbsp;</div>
 Conda allows you to create isolated environments with specific Python
-and library versions, which is essential for geospatial work.
+and library versions, which is essential for geospatial work. It allows you to manage dependencies and avoid conflicts, especially with complex libraries like GDAL. In some cases, using pip can lead to installation errors due to missing system-level dependencies. Conda-forge provides precompiled binaries that prevent these issues, making it the recommended choice for geospatial libraries.
+<div>&nbsp;</div>
 </p>
 
-<h4>Step 1 — Install Miniconda</h4>
+<h4><div>&nbsp;</div>Step 1 — Install Miniconda<div>&nbsp;</div></h4>
 
 <ul>
   <li>Go to <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda official site</a></li>
