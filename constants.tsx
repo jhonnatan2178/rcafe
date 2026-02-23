@@ -21,9 +21,9 @@ If you're new to the world of GIS, you're probably wondering:
 </p>
 
 <ul>
-  <li>style="text-align:center;"Where do I start?</li>
-  <li>What tools should I learn?</li>
-  <li>Which language is better?</li>
+  <li style="text-align:center;">Where do I start?</li>
+  <li style="text-align:center;">What tools should I learn?</li>
+  <li style="text-align:center;">Which language is better?</li>
 </ul>
 
 <p>
@@ -216,9 +216,18 @@ The foundation of numerical computing in Python.
 Used for array operations, raster math, and scientific calculations.
 
 Example:
+<div style="background-color:#1e1e1e; color:#d4d4d4; padding:15px; border-radius:8px; font-family:monospace;">
+<pre><code>
 import numpy as np
-arr = np.array([1, 2, 3])
-print(arr.mean())
+
+# Crear un arreglo simple
+arr = np.array([1, 2, 3, 4, 5])
+
+# Calcular la media
+print(np.mean(arr))
+</code></pre>
+</div>
+
 
 2. pandas  
 Used for tabular data manipulation — CSV files, time series, satellite statistics.
