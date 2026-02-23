@@ -31,7 +31,7 @@ function HomePage() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/videos/hero.mp4" type="video/mp4" />
+          <source src="/videos/nature.mp4" type="video/mp4" />
         </video>
         {/* IMAGEN FALLBACK (MÓVIL + SI FALLA VIDEO) */}
         <div
@@ -53,7 +53,8 @@ function HomePage() {
             </h2>
 
             <p className="text-xl text-emerald-100 mb-8">
-              Step-by-step tutoring in R and Python for environmental modeling.
+              Hello and welcome to EcoGeo! Have you ever questioned how to start your journey in GIS? Or maybe you’re wondering which tools are best for environmental analysis? 
+              well. You’re in the right place! Here, we provide clear, practical tutorials to help you master GIS for environmental and risk applications. Whether you’re a beginner or looking to expand your skills, we’ve got you covered. Let’s dive in and explore the world of geospatial analysis together!
             </p>
 
             <Link
