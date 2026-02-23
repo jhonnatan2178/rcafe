@@ -24,10 +24,10 @@ function TutorialPage() {
           className="relative h-[380px] bg-cover bg-center"
           style={{ backgroundImage: `url(${tutorial.image})` }}
         >
-          {/* Overlay oscuro */}
-          <div className="absolute inset-0 bg-black/50" />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/60" />
 
-          {/* Título */}
+          {/* Texto */}
           <div className="relative z-10 max-w-4xl mx-auto h-full flex flex-col justify-end px-6 pb-10">
             <h1 className="text-4xl md:text-5xl font-extrabold text-white">
               {tutorial.title}
@@ -56,27 +56,37 @@ function TutorialPage() {
           className="
             prose prose-slate max-w-3xl mx-auto
 
+            /* HEADINGS */
             prose-h1:text-3xl
             prose-h2:text-2xl
             prose-h3:text-xl
+            prose-h2:mt-10
+            prose-h3:mt-8
 
+            /* LINKS */
             prose-a:text-emerald-600
             prose-a:font-semibold
             prose-a:underline
             hover:prose-a:text-emerald-700
 
+            /* LISTAS (FIX BULLETS) */
             prose-ul:list-disc
             prose-ul:pl-6
-            prose-li:my-2
-
             prose-ol:list-decimal
             prose-ol:pl-6
+            prose-li:my-2
+            prose-li:marker:text-emerald-600
 
+            /* CÓDIGO INLINE */
             prose-code:bg-slate-100
-            prose-code:px-1
-            prose-code:rounded
             prose-code:text-emerald-700
+            prose-code:px-1
+            prose-code:py-0.5
+            prose-code:rounded
+            prose-code:before:content-none
+            prose-code:after:content-none
 
+            /* IMÁGENES */
             prose-img:rounded-xl
             prose-img:mx-auto
             prose-img:max-w-full
@@ -85,8 +95,9 @@ function TutorialPage() {
           dangerouslySetInnerHTML={{ __html: tutorial.content }}
         />
 
+        {/* BLOQUE DE CÓDIGO */}
         {tutorial.codeSnippet && (
-          <pre className="bg-slate-900 text-emerald-300 p-6 rounded-xl mt-10 overflow-x-auto">
+          <pre className="bg-slate-900 text-emerald-300 p-6 rounded-xl mt-12 overflow-x-auto text-sm">
             <code>{tutorial.codeSnippet}</code>
           </pre>
         )}

@@ -131,6 +131,7 @@ and library versions, which is essential for geospatial work. It allows you to m
 <h4>Step 2 — Create a GIS environment</h4>
 
 <pre><code>
+<div>&nbsp;</div>
 conda create -n gis python=3.11
 conda activate gis
 </code></pre>
