@@ -293,7 +293,7 @@ with rasterio.open("raster.tif") as src:
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-22",
-    image: "/PUBLIC/images/tutorials/coords.jpg",
+    image: "/images/tutorials/coords.jpg",
     content: `
 # Coordinate Reference Systems
 
@@ -359,7 +359,7 @@ plt.show()
     category: "Flood Modeling",
     level: "Intermediate",
     createdAt: "2026-02-22",
-    image: "/PUBLIC/images/tutorials/flood.jpg",
+    image: "/images/tutorials/flood.jpg",
     content: `
 Flood susceptibility analysis often begins with DEM classification.
 
@@ -391,7 +391,7 @@ flood_risk = np.where(dem < 5, 1, 0)
     category: "Land Cover Analysis",
     level: "Intermediate",
     createdAt: "2026-02-23",
-    image: "/PUBLIC/images/tutorials/landcover.jpg",
+    image: "/images/tutorials/landcover.jpg",
     content: `
 The Normalized Burn Ratio (NBR):
 
