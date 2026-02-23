@@ -19,7 +19,7 @@ export const TUTORIALS: TutorialSection[] = [
 <p>
 If you're new to the world of GIS, you're probably wondering:
 </p>
-
+<div>&nbsp;</div>
 <ul>
   <li style="text-align:center;">Where do I start?</li>
   <li style="text-align:center;">What tools should I learn?</li>
@@ -37,7 +37,9 @@ programming languages that dominate modern GIS workflows:
 <strong>Python</strong> and <strong>R</strong>.
 </p>
 
-<h2>Why don’t we just choose one?</h2>
+<div>&nbsp;</div>
+<h2><em>Why don’t we just choose one?</em></h2>
+<div>&nbsp;</div>
 
 <p>
 Python is arguably the most well-known programming language in the world.
@@ -45,7 +47,11 @@ Its versatility and massive ecosystem of libraries allow you to build automation
 pipelines, process satellite imagery, perform spatial analysis, and even integrate
 machine learning models.
 </p>
-
+<img
+  src="/images/tutorials/spatial.jpg"
+  class="img-right"
+/>
+<div>&nbsp;</div>
 <p>
 R, however, stands out for its deeply integrated statistical modeling capabilities.
 It was built by statisticians, and that foundation makes it exceptionally strong
