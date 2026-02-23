@@ -48,42 +48,99 @@ Professional GIS analysts often use both.
 In this tutorial, we’ll establish the professional baseline required for spatial analysis.  
 A correct setup is not optional — it determines reproducibility, stability, and performance.
 
-====================================================
-1. WHY ENVIRONMENTS MATTER
-====================================================
+<h2>1. Why environments matter</h2>
 
+<p>
 Reproducibility is critical in GIS and scientific computing.
+Different projects require different library versions, and installing
+everything globally almost always leads to problems.
+</p>
 
-Different projects require different library versions. Installing everything globally leads to:
+<ul>
+  <li>Version conflicts</li>
+  <li>Broken dependencies</li>
+  <li>Unreproducible workflows</li>
+  <li>"Works on my machine" issues</li>
+</ul>
 
-- Version conflicts  
-- Broken dependencies  
-- Unreproducible workflows  
-- “Works on my machine” problems  
+<p>
+The solution is simple and professional: isolated environments.
+</p>
 
-The solution is isolated environments.
+<h3>Python environments with Conda</h3>
 
-----------------------------------------
-Python → Conda
-----------------------------------------
+<p>
+Conda allows you to create isolated environments with specific Python
+and library versions, which is essential for geospatial work.
+</p>
 
-Conda allows you to create isolated environments with specific Python and library versions.
+<h4>Step 1 — Install Miniconda</h4>
 
-Step 1 — Install Miniconda:
-1. Go to: https://docs.conda.io/en/latest/miniconda.html  
-2. Download the version for your operating system  
-3. Install with default settings  
-4. Restart your terminal  
+<ul>
+  <li>Go to <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda official site</a></li>
+  <li>Download the installer for your OS</li>
+  <li>Install with default settings</li>
+  <li>Restart your terminal</li>
+</ul>
 
-Step 2 — Create a GIS environment:
+<h4>Step 2 — Create a GIS environment</h4>
 
-conda create -n gis python=3.11  
-conda activate gis  
+<pre><code>
+conda create -n gis python=3.11
+conda activate gis
+</code></pre>
 
-Why Python 3.11?
+<p>
+Python 3.11 is modern, stable, and compatible with most geospatial libraries.
+</p>
 
-It is stable, modern, and compatible with most geospatial libraries.
+<h3>Installing core GIS libraries (Python)</h3>
 
+<p>
+For geospatial libraries, <strong>conda-forge</strong> is strongly recommended
+because it provides precompiled binaries for GDAL-based packages.
+</p>
+
+<pre><code>
+conda install -c conda-forge \
+  geopandas rasterio shapely \
+  matplotlib pandas numpy
+</code></pre>
+
+<h3>Core libraries explained</h3>
+
+<h4>NumPy</h4>
+
+<img
+  src="/images/tutorials/spatial.jpg"
+  class="mx-auto w-3/5 rounded-xl my-10"
+/>
+
+<p>
+NumPy is the foundation of numerical computing in Python.
+It is used for raster math, array operations, and scientific calculations.
+</p>
+
+<pre><code>
+import numpy as np
+
+arr = np.array([1, 2, 3])
+print(arr.mean())
+</code></pre>
+
+<h4>GeoPandas</h4>
+
+<p>
+GeoPandas extends pandas to handle spatial vector data such as
+Shapefiles and GeoJSON, enabling spatial joins and geometric operations.
+</p>
+
+<pre><code>
+import geopandas as gpd
+
+gdf = gpd.read_file("boundary.shp")
+gdf.plot()
+</code></pre>
 ----------------------------------------
 R → renv
 ----------------------------------------
