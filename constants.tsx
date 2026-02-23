@@ -14,7 +14,7 @@ export const TUTORIALS: TutorialSection[] = [
     category: "Basic Stuff",
     level: "Beginner",
     createdAt: "2026-02-20",
-    image: "C:\rcafe\PUBLIC\images\tutorials\foundations.jpg",
+    image: "/images/tutorials/foundations.jpg",
     content: `
 Foundations of GIS
 

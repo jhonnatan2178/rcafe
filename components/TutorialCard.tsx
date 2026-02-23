@@ -4,7 +4,7 @@ interface Tutorial {
   id: string;
   title: string;
   date: string;
-  image?: string; // 👈 opcional por seguridad
+  image?: string; 
   description: string;
 }
 
