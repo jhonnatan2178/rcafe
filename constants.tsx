@@ -240,7 +240,17 @@ with rasterio.open("raster.tif") as src:
     content: `
 # Coordinate Reference Systems
 
-CRS defines how spatial data maps to Earth.
+Coordinates are crucial for spatial data. They define how your data aligns with the real world. But why do we have so many different systems? First reason: Earth is not completely spherical, and its form is actually called geoid. To represent this complex shape,
+we can imagine the earth as a balloon and then we can "unwrap" that balloon onto a flat surface. This process is called projection, and it inevitably introduces distortions. Different projections minimize different types of distortions (area, shape, distance, direction), which is why we have so many CRS.
+The most popular projection is the mercator, which is used by Google Maps and other web mapping services. However, it distorts areas near the poles, making them appear larger than they are in reality. For accurate spatial analysis, it's crucial to choose the right CRS for your project and to ensure that all your data layers are in the same CRS to avoid misalignment issues.
+By instance, on the Mercator projection, Greenland appears larger than Africa, when in reality Africa is about 14 times larger than Greenland. This distortion can lead to misinterpretations of spatial data if not properly accounted for.
+
+There's not a single "best" CRS — it depends on your location, scale, and analysis needs. Always check the CRS of your data and reproject if necessary. Best practice: use a local projected CRS for analysis and a global geographic CRS for visualization.
+
+There are three main types of CRS:
+- Geographic (latitude/longitude, e.g., EPSG:4326): unprojected, global, used for raw data and web mapping and based on latitude and longitude coordinates measured in degrees.
+- Projected (e.g., UTM zones): optimized for specific regions, used for analysis, based on Cartesian coordinates measured in meters.
+- Spherical (used for global datasets, e.g., EPSG:3857): a compromise for web mapping, distorts areas but preserves shapes.
 
 COMMON CRS:
 - EPSG:4326 (WGS84)
