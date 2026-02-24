@@ -122,29 +122,31 @@ and library versions, which is essential for geospatial work. It allows you to m
 <h4><div>&nbsp;</div>Step 1 — Install Miniconda<div>&nbsp;</div></h4>
 
 <ul>
-  <li>Go to <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda official site</a></li>
+  <li>Go to <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank"><strong>Miniconda official site</strong></a></li>
   <li>Download the installer for your OS</li>
   <li>Install with default settings</li>
   <li>Restart your terminal</li>
+  <div>&nbsp;</div>
 </ul>
 
 <h4>Step 2 — Create a GIS environment</h4>
 
 <pre><code>
-<div>&nbsp;</div>
+
 conda create -n gis python=3.11
 conda activate gis
 </code></pre>
 
 <p>
-Python 3.11 is modern, stable, and compatible with most geospatial libraries.
+Python 3.11 is modern, stable, and compatible with most geospatial libraries. Using a specific version ensures that you have a consistent environment for your GIS projects. In some cases, newer versions may have compatibility issues with certain libraries, so sticking to a well-supported version like 3.11 is a good practice.
+<div>&nbsp;</div>
 </p>
 
-<h3>Installing core GIS libraries (Python)</h3>
+<h3><strong>Installing core GIS libraries (Python)</strong></h3>
 
 <p>
 For geospatial libraries, <strong>conda-forge</strong> is strongly recommended
-because it provides precompiled binaries for GDAL-based packages.
+because it provides precompiled binaries for GDAL-based packages. The following command installs the essential libraries for spatial analysis, there are other useful libraries that we will use in other tutorials but these are the core ones to start with.
 </p>
 
 <pre><code>
@@ -153,209 +155,29 @@ conda install -c conda-forge \
   matplotlib pandas numpy
 </code></pre>
 
-<h3>Core libraries explained</h3>
+<section class="mt-16">
 
-<h4>NumPy</h4>
+  <h2>Core GIS Libraries: Python vs R</h2>
 
-<img
-  src="/images/tutorials/spatial.jpg"
-  class="mx-auto w-3/5 rounded-xl my-10"
-/>
+  <p>
+    Modern GIS workflows rely on a small set of well-established libraries.
+    While Python and R approach spatial analysis differently, their core tools
+    solve equivalent problems.
+  </p>
 
-<p>
-NumPy is the foundation of numerical computing in Python.
-It is used for raster math, array operations, and scientific calculations.
-</p>
+  <!-- PYTHON -->
+  <h3>Python GIS Libraries</h3>
 
-<pre><code>
-import numpy as np
+  <ul>
+    <li><strong>NumPy</strong> — Fundamental numerical library for raster and numerical computation.</li>
+    <li><strong>Pandas</strong> — Tabular data handling for attributes and statistics.</li>
+    <li><strong>GeoPandas</strong> — Vector spatial data analysis.</li>
+    <li><strong>Shapely</strong> — Geometry operations.</li>
+    <li><strong>Rasterio</strong> — Raster data processing.</li>
+  </ul>
 
-arr = np.array([1, 2, 3])
-print(arr.mean())
-</code></pre>
+</section>
 
-<h4>GeoPandas</h4>
-
-<p>
-GeoPandas extends pandas to handle spatial vector data such as
-Shapefiles and GeoJSON, enabling spatial joins and geometric operations.
-</p>
-
-<pre><code>
-import geopandas as gpd
-
-gdf = gpd.read_file("boundary.shp")
-gdf.plot()
-</code></pre>
-
-<p><strong>Step 1 — Install R:</strong><br>
-  Download from <a href="https://cran.r-project.org/" target="_blank">CRAN official site</a></p>
-
-  <p><strong>Step 2 — Install RStudio (recommended):</strong><br>
-  Download from <a href="https://posit.co/" target="_blank">Posit (RStudio)</a></p>
-
-  <p><strong>Step 3 — Initialize a project environment:</strong></p>
-
-  <div class="code-block">
-<pre><code>install.packages("renv")
-renv::init()
-</code></pre>
-  </div>
-
-  <p>The <strong>renv</strong> package locks your project’s package versions, ensuring full reproducibility.</p>
-
-  <h2>2. INSTALLING CORE GIS LIBRARIES</h2>
-
-  <h3>PYTHON LIBRARIES</h3>
-
-  <p>Install using conda (recommended for geospatial):</p>
-
-  <div class="code-block">
-<pre><code>conda install -c conda-forge geopandas rasterio shapely matplotlib pandas numpy
-</code></pre>
-  </div>
-
-  <p><strong>Why conda-forge?</strong><br>
-  Geospatial libraries depend on complex system-level tools like GDAL. Conda-forge provides precompiled binaries, preventing installation errors.</p>
-
-  <h3>NumPy</h3>
-  <img src="/images/tutorials/spatial.jpg" alt="Spatial tutorial image" />
-
-  <p>The foundation of numerical computing in Python.<br>
-  Used for array operations, raster math, and scientific calculations.</p>
-
-  <p><strong>Example:</strong></p>
-  <div class="code-block">
-<pre><code>import numpy as np
-
-# Crear un arreglo simple
-arr = np.array([1, 2, 3, 4, 5])
-
-# Calcular la media
-print(np.mean(arr))
-</code></pre>
-  </div>
-
-  <h3>Pandas</h3>
-  <p>Used for tabular data manipulation — CSV files, time series, satellite statistics.</p>
-
-  <h2>1. Why environments matter</h2>
-  <p>Reproducibility is critical in GIS and scientific computing.</p>
-
-  <img src="/images/tutorials/wildfire.jpg" alt="Wildfire tutorial image" />
-
-  <p>Different projects require different library versions...</p>
-
-  <p><strong>Example:</strong></p>
-  <div class="code-block">
-<pre><code>import pandas as pd
-df = pd.read_csv("data.csv")
-print(df.head())
-</code></pre>
-  </div>
-
-  <h3>GeoPandas</h3>
-  <p>Extends pandas to handle spatial vector data (Shapefiles, GeoJSON, spatial joins, buffers).</p>
-
-  <div class="code-block">
-<pre><code>import geopandas as gpd
-gdf = gpd.read_file("boundary.shp")
-gdf.plot()
-</code></pre>
-  </div>
-
-  <h3>Shapely</h3>
-  <p>Handles geometric operations like buffering, intersection, and distance calculations.</p>
-
-  <div class="code-block">
-<pre><code>from shapely.geometry import Point
-p = Point(10, 5)
-buffered = p.buffer(100)
-</code></pre>
-  </div>
-
-  <h3>Rasterio</h3>
-  <p>Used for reading and processing raster data (GeoTIFF, satellite imagery).</p>
-
-  <div class="code-block">
-<pre><code>import rasterio
-with rasterio.open("image.tif") as src:
-    band1 = src.read(1)
-    print(band1.shape)
-</code></pre>
-  </div>
-
-----------------------------------------
-R LIBRARIES
-----------------------------------------
-
-Install in R:
-
-install.packages(c("sf", "terra", "tidyverse"))
-
-1. sf  
-Modern package for handling vector spatial data.
-
-Example:
-library(sf)
-gdf <- st_read("boundary.shp")
-plot(gdf)
-
-2. terra  
-Modern raster analysis package (successor of raster).
-
-Example:
-library(terra)
-r <- rast("image.tif")
-plot(r)
-
-3. tidyverse  
-Data manipulation and visualization ecosystem (dplyr, ggplot2, readr).
-
-Example:
-library(dplyr)
-data <- read.csv("data.csv")
-data %>% summarise(mean_value = mean(value))
-
-====================================================
-3. PYTHON vs R IN GIS
-====================================================
-
-Python excels in:
-- Automation
-- Large-scale raster processing
-- Integration with machine learning
-
-R excels in:
-- Statistical analysis
-- Ecological modeling
-- Publication-ready graphics
-
-Both are powerful. Most advanced professionals use both depending on the problem.
-
-====================================================
-4. BEYOND PROGRAMMING
-====================================================
-
-We won’t limit ourselves to programming.
-
-Throughout this portal, we will also explore:
-
-• QGIS  
-• Google Earth Engine  
-
-Because GIS is not about choosing a single tool —
-it’s about building a complete ecosystem.
-
-====================================================
-FINAL NOTE
-====================================================
-
-Before performing spatial analysis, your environment must be stable.
-
-A professional GIS workflow does not begin with maps.
-
-It begins with reproducibility.
 `,
   codeSnippet: `
 # Create Python GIS environment
