@@ -31,7 +31,7 @@ export const TutorialCard: React.FC<Props> = ({ tutorial }) => {
             ))}
           </div>
 
-          {tutorial.mapData && <MapPreview data={tutorial.mapData} />}
+          {(tutorial as any).mapData && <MapPreview data={(tutorial as any).mapData} />}
           
           <div className="relative group mt-4">
             <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">

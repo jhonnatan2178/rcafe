@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, VideoGenerationReferenceImage, VideoGenerationReferenceType } from "@google/genai";
-import { SYSTEM_INSTRUCTION } from "../constants";
+//import { SYSTEM_INSTRUCTION } from "../constants";
 
 export class GeminiService {
   private ai: GoogleGenAI;
@@ -18,7 +18,7 @@ export class GeminiService {
           { role: 'user', parts: [{ text: message }] }
         ],
         config: {
-          systemInstruction: SYSTEM_INSTRUCTION,
+          //systemInstruction: SYSTEM_INSTRUCTION,
           temperature: 0.7,
         }
       });

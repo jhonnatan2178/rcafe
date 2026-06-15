@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 interface Tutorial {
   id: string;
   title: string;
-  date: string;
-  image?: string; 
+  createdAt: string;
+  image?: string;
   description: string;
 }
 
@@ -34,7 +34,7 @@ export function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
         </h2>
 
         <p className="text-sm text-emerald-600 mb-4">
-          {tutorial.date}
+          {tutorial.createdAt}
         </p>
 
         <p className="text-slate-600 mb-4 line-clamp-3">
