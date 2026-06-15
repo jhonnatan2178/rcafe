@@ -3,12 +3,12 @@ import { TUTORIALS } from "../constants";
 import { lazy, Suspense } from "react";
 
 // ── lazy-load each tutorial component ────────────────────────────────────────
-const VectorVsRaster  = lazy(() => import("../tutorials/VectorVsRaster"));
-const CRSExplained    = lazy(() => import("../tutorials/CRSExplained"));
-const FloodRisk       = lazy(() => import("../tutorials/FloodRisk"));
-const WildfireNBR     = lazy(() => import("../tutorials/WildfireNBR"));
-const WaterQuality    = lazy(() => import("../tutorials/WaterQuality"));
-const CordobaFloodGEE = lazy(() => import("../tutorials/CordobaFloodGEE"));
+const VectorVsRaster  = lazy(() => import("./tutorials/VectorVsRaster"));
+const CRSExplained    = lazy(() => import("./tutorials/CRSExplained"));
+const FloodRisk       = lazy(() => import("./tutorials/FloodRisk"));
+const WildfireNBR     = lazy(() => import("./tutorials/WildfireNBR"));
+const WaterQuality    = lazy(() => import("./tutorials/WaterQuality"));
+const CordobaFloodGEE = lazy(() => import("./tutorials/CordobaFloodGEE"));
 
 // ── map tutorial id → React component ────────────────────────────────────────
 const COMPONENT_MAP: Record<string, React.ComponentType> = {
