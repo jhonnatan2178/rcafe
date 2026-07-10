@@ -9,6 +9,8 @@ const FloodRisk       = lazy(() => import("./tutorials/FloodRisk"));
 const WildfireNBR     = lazy(() => import("./tutorials/WildfireNBR"));
 const WaterQuality    = lazy(() => import("./tutorials/WaterQuality"));
 const CordobaFloodGEE = lazy(() => import("./tutorials/CordobaFloodGEE"));
+const PyqgisAI        = lazy(() => import("./tutorials/PyqgisAI"));
+const SqlBasicsToExpert = lazy(() => import("./tutorials/SqlBasicsToExpert"));
 
 // ── map tutorial id → React component ────────────────────────────────────────
 const COMPONENT_MAP: Record<string, React.ComponentType> = {
@@ -18,6 +20,8 @@ const COMPONENT_MAP: Record<string, React.ComponentType> = {
   "r-wildfire-nbr":       WildfireNBR,
   "water-quality":        WaterQuality,
   "cordoba-gee":          CordobaFloodGEE,
+  "pyqgis-ai":            PyqgisAI,
+  "sql-basics-to-expert": SqlBasicsToExpert,
 };
 
 // ── loading spinner ───────────────────────────────────────────────────────────
