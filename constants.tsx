@@ -1362,4 +1362,160 @@ print("Saved: chla_ugL.tif")
 `
   },
 
+  {
+    id: 'pyqgis-ai',
+    title: 'PyQGIS: From the Basics to a Natural-Language Front End',
+    description: 'Learn core PyQGIS scripting — layers, attributes, geometry, Processing algorithms — then wire an LLM into the console for natural-language geoprocessing.',
+    language: Language.PYTHON,
+    category: "Automation & Scripting",
+    level: "Beginner to Advanced",
+    createdAt: "2026-07-10",
+    image: "/images/tutorials/spatial.jpg",
+    content: `
+<p>
+PyQGIS already gives you full programmatic access to layers, geoprocessing
+algorithms, and the map canvas. Part one of this tutorial covers the fundamentals —
+loading layers, reading attributes, geometry operations, and running Processing
+algorithms from code. Part two builds on that to wire an LLM into the QGIS Python
+console, so a description like "buffer the wells by 500 m and clip to the
+watershed" becomes reviewable PyQGIS code instead of a memorized API call.
+</p>
+
+<hr>
+
+<h2>Part 1 — PyQGIS fundamentals</h2>
+
+<ul>
+  <li><strong>Loading & inspecting layers</strong> — QgsVectorLayer / QgsRasterLayer, always check isValid() first.</li>
+  <li><strong>Reading features & attributes</strong> — getFeatures() streams as a generator; filter with QgsFeatureRequest.</li>
+  <li><strong>Basic geometry operations</strong> — area(), length(), buffer(), distance() on QgsGeometry.</li>
+  <li><strong>Running Processing algorithms</strong> — processing.run() returns a dict keyed by output parameter names.</li>
+  <li><strong>Styling layers programmatically</strong> — QgsSymbol and QgsSingleSymbolRenderer for consistent map output.</li>
+</ul>
+
+<h2>Part 2 — Adding a natural-language front end</h2>
+
+<p>
+None of this replaces knowledge of the PyQGIS API — it removes the friction of
+recalling exact syntax mid-analysis. An ask_ai() helper sends a prompt to an LLM and
+returns PyQGIS code; a QgsTask version keeps it non-blocking since the console runs
+on QGIS's main UI thread. The pattern that holds up in practice: describe intent,
+get code back, read it, test it in a scratch project, then promote it.
+</p>
+
+<h2>Where it breaks down</h2>
+
+<p>
+An LLM generates plausible-looking geoprocessing code — that's a different thing
+from correct code. It will confidently get CRS units, field names, and
+version-specific method names wrong. Always verify units explicitly and check any
+unfamiliar method against the PyQGIS Developer Cookbook for your installed version.
+</p>
+`,
+    codeSnippet: `
+from qgis.core import QgsVectorLayer, QgsTask, QgsApplication
+import os, requests, processing
+
+def ask_ai(prompt: str) -> str:
+    resp = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": os.environ["ANTHROPIC_API_KEY"],
+            "anthropic-version": "2023-06-01",
+        },
+        json={
+            "model": "claude-sonnet-4-6",
+            "max_tokens": 800,
+            "messages": [{"role": "user", "content": prompt}],
+        },
+    )
+    return resp.json()["content"][0]["text"]
+
+def run_ai_task(prompt, on_done):
+    task = QgsTask.fromFunction("Ask AI", lambda t: ask_ai(prompt))
+    task.taskCompleted.connect(lambda: on_done(task.returned_values))
+    QgsApplication.taskManager().addTask(task)
+
+# Example: reproject + buffer, generated from a natural-language prompt
+stations = QgsProject.instance().mapLayersByName("stations")[0]
+reproj = processing.run("native:reprojectlayer", {
+    "INPUT": stations, "TARGET_CRS": "EPSG:32618", "OUTPUT": "memory:"
+})["OUTPUT"]
+buffered = processing.run("native:buffer", {
+    "INPUT": reproj, "DISTANCE": 200, "OUTPUT": "memory:"
+})["OUTPUT"]
+QgsProject.instance().addMapLayer(buffered)
+`
+  },
+
+  {
+    id: 'sql-basics-to-expert',
+    title: 'SQL: From SELECT to Query Optimization',
+    description: 'A three-part progression through SQL — core querying, intermediate analysis tools like window functions and CTEs, then indexing, transactions, and query optimization.',
+    language: Language.PYTHON,
+    category: "Databases",
+    level: "Beginner to Expert",
+    createdAt: "2026-07-10",
+    image: "/images/tutorials/coords.jpg",
+    content: `
+<p>
+Three parts, each building on the last: core querying, then the intermediate tools
+that make real analysis possible, then the expert-level habits — indexing,
+transactions, optimization — that separate a query that works from one that scales.
+</p>
+
+<hr>
+
+<h2>Part 1 — Core querying</h2>
+<ul>
+  <li><strong>SELECT, FROM, WHERE</strong> — the basic shape of every query; WHERE filters rows before any grouping.</li>
+  <li><strong>Sorting, limiting, de-duplicating</strong> — ORDER BY, LIMIT, DISTINCT.</li>
+  <li><strong>Aggregates & GROUP BY</strong> — COUNT, SUM, AVG, and HAVING for filtering groups after aggregation.</li>
+  <li><strong>Joins</strong> — INNER JOIN for matches only, LEFT JOIN to keep every row from one side.</li>
+  <li><strong>Subqueries</strong> — scalar and correlated, plus EXISTS as an often-faster alternative to IN.</li>
+</ul>
+
+<h2>Part 2 — Real analysis</h2>
+<ul>
+  <li><strong>CTEs</strong> — the WITH clause, including a recursive example.</li>
+  <li><strong>Window functions</strong> — ROW_NUMBER, LAG, rolling averages, without collapsing rows the way GROUP BY does.</li>
+  <li><strong>CASE expressions, NULL handling, set operations, string/date functions.</strong></li>
+</ul>
+
+<h2>Part 3 — Making it scale and last</h2>
+<ul>
+  <li><strong>Indexes & EXPLAIN ANALYZE</strong> — reading a query plan, spotting a sequential scan that should be an index scan.</li>
+  <li><strong>Transactions & isolation levels</strong> — ACID basics, BEGIN/COMMIT/ROLLBACK.</li>
+  <li><strong>Views vs materialized views, functions & triggers.</strong></li>
+  <li><strong>Query optimization patterns</strong> — sargability, avoiding functions on indexed columns.</li>
+  <li><strong>Spatial SQL with PostGIS</strong> — ST_DWithin, ST_Intersects, and GIST spatial indexes.</li>
+</ul>
+`,
+    codeSnippet: `
+-- A taste of each part, on a stations/samples schema
+
+-- Part 1: join + aggregate
+SELECT s.name, COUNT(m.sample_id) AS n_samples, AVG(m.tss_mgl) AS avg_tss
+FROM stations s
+LEFT JOIN samples m ON m.station_id = s.station_id
+GROUP BY s.name
+HAVING COUNT(m.sample_id) > 0
+ORDER BY avg_tss DESC;
+
+-- Part 2: window function — rolling average per station
+SELECT
+  station_id, sample_date, tss_mgl,
+  AVG(tss_mgl) OVER (PARTITION BY station_id ORDER BY sample_date
+                      ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS rolling_avg_3
+FROM samples;
+
+-- Part 3: sargable filter + spatial index
+CREATE INDEX idx_samples_station_date ON samples (station_id, sample_date);
+CREATE INDEX idx_stations_geom ON stations USING GIST (geom);
+
+SELECT * FROM samples
+WHERE sample_date >= '2026-01-01' AND sample_date < '2026-02-01';
+`
+  },
+
 ];
