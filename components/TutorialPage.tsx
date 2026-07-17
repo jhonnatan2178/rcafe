@@ -19,7 +19,7 @@ const FloodRisk       = lazy(() => import("./tutorials/FloodRisk"));
 const WildfireNBR     = lazy(() => import("./tutorials/WildfireNBR"));
 const WaterQuality    = lazy(() => import("./tutorials/WaterQuality"));
 const CordobaFloodGEE = lazy(() => import("./tutorials/CordobaFloodGEE"));
-const PyqgisAI        = lazy(() => import("./tutorials/PyqgisAI"));
+const PyqgisAI        = lazy(() => import("./tutorials/Pyqgisai"));
 const SqlBasicsToExpert = lazy(() => import("./tutorials/SqlBasicsToExpert"));
 
 // ── map tutorial id → React component ────────────────────────────────────────
