@@ -5,6 +5,7 @@ import { Layout } from "./components/Layout";
 import { TutorialCard } from "./components/TutorialCard";
 import TutorialsPage from "./components/TutorialsPage";
 import TutorialPage from "./components/TutorialPage";
+import RiskAnalysisPage from "./components/RiskAnalysisPage";
 
 import { TUTORIALS } from "./constants";
 
@@ -98,6 +99,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/tutorials" element={<TutorialsPage />} />
         <Route path="/tutorial/:id" element={<TutorialPage />} />
+        <Route path="/risk-analysis" element={<RiskAnalysisPage />} />
       </Routes>
     </Layout>
   );

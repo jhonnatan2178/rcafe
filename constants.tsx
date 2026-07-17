@@ -1518,4 +1518,2343 @@ WHERE sample_date >= '2026-01-01' AND sample_date < '2026-02-01';
 `
   },
 
+
+  // =====================================================
+  // 2️⃣ RISK & DECISION ANALYSIS
+  // Based on Haimes, "Risk Modeling, Assessment, and
+  // Management" — modernized. Series runs 01 through 11,
+  // each tutorial builds on the ones before it.
+  // =====================================================
+
+{
+  id: 'systems-risk-analysis',
+  title: '01 - The Art and Science of Systems & Risk Analysis',
+  description: 'The classical risk triplet, systems thinking, and how Bayesian networks, calibrated ML, and digital twins modernize it.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Intermediate",
+  createdAt: "2026-07-16",
+  image: "/images/tutorials/risk-analysis.jpg",
+  content: `
+<p>
+Every monitoring pipeline on this site — a flood extent map, a burn severity index,
+a coastal contamination flag — is, underneath, a risk model. This tutorial opens a
+new track: instead of a sensor or algorithm, we look at the discipline that decides
+<em>which</em> risks matter, how to quantify them, and how to act on them. Systems
+engineering calls this risk analysis, and its modern form is a direct descendant of
+a framework formalized in the 1980s that is still the backbone of how risk is
+defined today.
+</p>
+
+<hr>
+
+<h2>What actually is a "system"?</h2>
+
+<p>
+A system is a purposeful set of interrelated components — physical, human,
+institutional — whose collective behavior cannot be predicted by studying each
+part in isolation. Systems engineering is the discipline of designing and managing
+that whole across its entire life cycle, not just optimizing its components.
+</p>
+
+<p>
+A coastal water-quality monitoring program is a good example. It is not just a
+satellite and an algorithm. It is satellites, in-situ sampling, a predictive model,
+a health agency's decision process, and beach-goers' behavior, all coupled
+together. Missing any one of those parts means missing part of the actual risk.
+</p>
+
+<hr>
+
+<h2>The risk triplet: how risk got a rigorous definition</h2>
+
+<p>
+In 1981, Kaplan and Garrick proposed that quantitative risk could be reduced to
+the answers to three questions, later adopted as the foundation of the entire
+field of risk analysis:
+</p>
+
+<ol>
+  <li><strong>What can happen?</strong> — the scenario.</li>
+  <li><strong>How likely is it?</strong> — the probability.</li>
+  <li><strong>If it does happen, what are the consequences?</strong></li>
+</ol>
+
+<p>
+That's <em>risk assessment</em>. Haimes' framework adds a second triplet on top of
+it, turning assessment into <em>management</em>:
+</p>
+
+<ol>
+  <li><strong>What can be done about it?</strong> — the available options.</li>
+  <li><strong>What are the trade-offs</strong> among cost, benefit, and risk across
+  those options?</li>
+  <li><strong>What does today's decision cost in future options?</strong></li>
+</ol>
+
+<p>
+Six questions, in two groups. Almost every risk methodology you'll meet — HHM,
+decision trees, Bayesian networks, ISO 31000 — is a way of answering one of these
+six more rigorously.
+</p>
+
+<hr>
+
+<h2>From the Farmer's Dilemma to the Coastal Manager's Dilemma</h2>
+
+<p>
+Haimes' book teaches this framework through a running example: a farmer choosing
+a crop mix under uncertain rainfall, trading expected yield against the risk of a
+bad season. The tension between maximizing what you expect on average and
+minimizing your exposure to the worst case is the seed of multiobjective trade-off
+analysis — later formalized as noninferior (Pareto-optimal) solutions.
+</p>
+
+<p>
+The environmental-monitoring analog is a coastal manager deciding whether to close
+a beach, delay dredging, or authorize an outfall discharge, weighing expected
+recreational or economic value against the probability and severity of a
+contamination event. Same six questions, different scenario — and the same
+underlying tension between the expected outcome and the tail risk.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<p>
+The classical triplet assumed scenarios and probabilities came largely from expert
+judgment — which is exactly what Hierarchical Holographic Modeling (HHM, covered
+in the book's next chapter) was built for: systematically decomposing a system
+into topics and sub-topics so no source of risk is overlooked. HHM is a direct
+ancestor of the structured risk registers and multi-hazard frameworks used in
+disaster-risk reduction today.
+</p>
+
+<p>
+Three things have changed since 1998:
+</p>
+
+<ul>
+  <li>
+    <strong>Bayesian networks</strong> encode the same what-can-happen /
+    how-likely structure, but let evidence — sensor readings, remote-sensing
+    indices — update probabilities as it arrives, propagating uncertainty across
+    dependent risk factors instead of relying on one static number.
+  </li>
+  <li>
+    <strong>Calibrated ML classifiers</strong> (random forests, gradient boosting,
+    increasingly transformer-based models on satellite time series) estimate
+    P(hazard) directly from covariates instead of hand-built probability tables —
+    this is the machinery behind most modern contamination and hazard prediction
+    work, including on this site.
+  </li>
+  <li>
+    <strong>Digital twins</strong> — a continuously updated virtual replica of the
+    monitored system, fed by IoT and remote sensing — run the risk triplet
+    operationally, and let managers simulate a treatment option before committing
+    to it, turning question 4 (what can be done) into a live simulation instead of
+    a static table.
+  </li>
+</ul>
+
+<p>
+At the management-standard level, ISO 31000 generalized this same triplet
+structure (establish context → identify → analyze → evaluate → treat → monitor)
+into a process used across industries — playing today the role Haimes' framework
+originally played specifically for engineering systems.
+</p>
+
+<hr>
+
+<h2>A minimal, quantitative version of the triplet</h2>
+
+<p>
+The snippet below turns the qualitative triplet into a small geospatial pipeline:
+a probability layer (question 2, e.g. the output of a calibrated classifier
+estimating P(contamination) per pixel) multiplied by a consequence layer
+(question 3, e.g. beach usage or population exposure), classified into a
+three-tier risk matrix. It's the same <code>risk = P(hazard) × consequence</code>
+definition Kaplan and Garrick proposed in 1981, implemented as an actual raster
+workflow.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Cascading risk</strong> — the static triplet treats scenarios as
+  independent. A flood that knocks out a treatment plant and <em>then</em> causes
+  a contamination event is a chain, not a single scenario. This is precisely what
+  HHM and "systems of systems" thinking exist to catch.</li>
+  <li><strong>Calibration</strong> — a raw classifier score is not automatically a
+  probability. Before treating a model's output as "how likely," calibrate it
+  (Platt scaling, isotonic regression) or the second question in the triplet goes
+  unanswered even though a number is displayed.</li>
+  <li><strong>The consequence layer is usually the weakest link</strong> — teams
+  invest heavily in the hazard model and treat exposure/consequence as an
+  afterthought, when it deserves the same rigor.</li>
+</ul>
+
+<hr>
+
+<h2>Where this track is headed</h2>
+
+<ul>
+  <li>Hierarchical Holographic Modeling — structured scenario identification for
+  complex, interdependent systems.</li>
+  <li>Decision trees and multiobjective trade-off analysis — formalizing the
+  Coastal Manager's Dilemma quantitatively, option by option.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> before reaching for a bigger model, make sure you
+can answer the three original questions for your system — what can happen, how
+likely, and what if it does. Everything else in this track is refinement.
+</p>
+`,
+  codeSnippet: `
+import numpy as np
+import rasterio
+
+def load_raster(path):
+    with rasterio.open(path) as src:
+        return src.read(1).astype(float), src.profile
+
+# "How likely" — probability layer from a CALIBRATED classifier
+# e.g. output of a Random Forest / logistic regression estimating
+# P(fecal contamination) per pixel from Sentinel-2 + in-situ training data
+prob_hazard, profile = load_raster("p_contamination.tif")
+
+# "What if it does happen" — consequence layer
+# e.g. normalized beach-usage, population density, or economic-value index
+consequence, _ = load_raster("consequence_index.tif")
+
+# Kaplan & Garrick's triplet, quantified:
+# risk(x) = P(hazard at x) * consequence(x)
+risk = prob_hazard * consequence
+
+# Classify into a 3-tier risk matrix (Low / Medium / High)
+risk_class = np.select(
+    [risk < 0.15, risk < 0.4],
+    [1, 2],
+    default=3
+)
+
+profile.update(dtype=rasterio.uint8, count=1, nodata=0)
+with rasterio.open("risk_map.tif", "w", **profile) as dst:
+    dst.write(risk_class.astype(np.uint8), 1)
+
+print("Risk map exported — pixel values: 1=Low, 2=Medium, 3=High")
+`
+},
+
+{
+  id: 'decision-analysis',
+  title: '02 - Decision Analysis: Choosing Under Uncertainty',
+  description: 'Decision rules, decision trees, the fractile/triangular methods, and influence diagrams — from expert elicitation to Bayesian decision networks.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Intermediate",
+  createdAt: "2026-07-17",
+  image: "/images/tutorials/decision-analysis.jpg",
+  content: `
+<p>
+Tutorial 01 gave us a way to <em>score</em> risk: probability times consequence,
+mapped as low / medium / high. But a score alone doesn't tell the Coastal Manager
+whether to close the beach. Turning a risk score into a choice among real options
+is the job of decision analysis — the toolkit built to answer the second half of
+Haimes' six questions: what can be done, and what are the trade-offs.
+</p>
+
+<hr>
+
+<h2>Deciding when you don't even have probabilities</h2>
+
+<p>
+Sometimes you can't honestly assign a probability to a scenario at all — a novel
+contaminant, a first-of-its-kind infrastructure failure. Classical decision theory
+still gives you rules for choosing an alternative under that kind of uncertainty:
+</p>
+
+<ul>
+  <li><strong>Maximin (Wald)</strong> — look only at each option's worst-case
+  outcome, and pick the option whose worst case is least bad. Risk-averse by
+  construction.</li>
+  <li><strong>Maximax</strong> — the mirror image: pick the option with the best
+  best-case outcome. Risk-seeking.</li>
+  <li><strong>Laplace</strong> — with no reason to favor one scenario over
+  another, treat them as equally likely and pick the option with the best
+  average.</li>
+  <li><strong>Minimax regret (Savage)</strong> — for each option, compute how much
+  worse it does than the best choice would have done <em>had you known the true
+  scenario</em>; pick the option minimizing that worst regret.</li>
+  <li><strong>Expected value (Bayes)</strong> — once you do have probabilities
+  (from a model, from data, from expert elicitation), weight each outcome by its
+  probability. This is the rule decision trees are built on.</li>
+</ul>
+
+<p>
+None of these is "correct" — they encode different attitudes toward uncertainty.
+Which one a manager reaches for often says more about their risk tolerance than
+about the data.
+</p>
+
+<hr>
+
+<h2>Decision trees: folding uncertainty back into a choice</h2>
+
+<p>
+A decision tree alternates decision nodes (choices you control) with chance nodes
+(outcomes you don't), ending in a payoff at each leaf. Solving it — the "rollback"
+or "fold-back" method — works from the leaves inward: at every chance node,
+replace the branch with its expected value (Bayes' rule above); at every decision
+node, keep only the branch with the best expected value and discard the rest.
+</p>
+
+<p>
+For the Coastal Manager's Dilemma: close the beach (a fixed, certain cost) versus
+keep it open (a small gain if nothing happens, a large loss if a contamination
+event occurs, weighted by the probability from the Tutorial 01 hazard model). Fold
+the tree back, and the better decision falls out — an EMV comparison, made
+explicit.
+</p>
+
+<p>
+One caveat carried straight from Haimes: raw expected monetary value treats a 10%
+chance of losing 100 the same as a certain loss of 10. Real decision-makers are
+rarely that indifferent to variance — which is why expected <em>utility</em>
+(a risk-adjusted version of EMV) often replaces raw EMV once the stakes involve
+public health rather than just cost.
+</p>
+
+<hr>
+
+<h2>Decision matrices and multiple criteria</h2>
+
+<p>
+A decision matrix lays out every alternative against every scenario (or every
+criterion) in a table, then applies one of the rules above. The moment more than
+one criterion matters at once — cost <em>and</em> ecological impact <em>and</em>
+public-health risk — this generalizes into multi-criteria decision analysis
+(MCDA): weighted-sum scoring, AHP, or TOPSIS, all descendants of the same matrix,
+built to handle the multiobjective trade-offs Haimes flagged back in the
+Farmer's Dilemma.
+</p>
+
+<hr>
+
+<h2>The fractile method and the triangular distribution</h2>
+
+<p>
+Both were built for the same problem: putting a number on uncertainty when no
+hard dataset exists yet.
+</p>
+
+<ul>
+  <li>
+    <strong>The fractile method</strong> elicits a probability distribution from
+    an expert by asking for percentiles directly — "give me the value you're 50%
+    sure won't be exceeded, then the value you're 5% sure won't be exceeded" —
+    building a CDF point by point instead of asking for a shape up front.
+  </li>
+  <li>
+    <strong>The triangular distribution</strong> is the cheaper cousin: ask only
+    for a minimum, most-likely, and maximum value, and interpolate a distribution
+    from those three points. It's still the default behind three-point cost and
+    schedule estimates (PERT) and countless Monte Carlo risk simulations today.
+  </li>
+</ul>
+
+<p>
+The modern shift: wherever a historical or sensor record exists — a contamination
+time series, a satellite archive — fit an empirical or Bayesian-updated
+distribution instead of eliciting one from an expert. The triangular distribution
+remains the honest default only when the data genuinely isn't there yet, e.g. an
+emerging contaminant or a newly deployed sensor with no track record.
+</p>
+
+<hr>
+
+<h2>Influence diagrams — the compact alternative to a full tree</h2>
+
+<p>
+A decision tree branches out combinatorially as more decisions and events stack
+up. An influence diagram compresses the same information into a directed graph:
+decision nodes, chance nodes, and a value node, connected by arcs that show what
+influences what — without enumerating every path explicitly.
+</p>
+
+<p>
+This is exactly the structure a Bayesian network gains when you add decision and
+utility nodes to it. Today, tools like <code>pgmpy</code> in Python (or dedicated
+software like GeNIe and Hugin) build and solve these directly — an influence
+diagram isn't a historical curiosity, it's the diagram most modern Bayesian
+decision-support systems are drawing under the hood.
+</p>
+
+<hr>
+
+<h2>A worked version: the Coastal Manager's Dilemma, quantified</h2>
+
+<p>
+The snippet below folds a two-option decision tree (close the beach vs. keep it
+open), using the hazard probability from Tutorial 01's risk model, then layers on
+a fractile-style Monte Carlo simulation — a triangular distribution on the
+outbreak cost, and a Beta distribution capturing uncertainty in the hazard
+probability itself — to ask a sharper question than EMV alone: <em>how often
+would the EMV-optimal decision actually turn out to be wrong?</em>
+</p>
+
+<hr>
+
+<h2>Where the classical framework runs out</h2>
+
+<ul>
+  <li><strong>Static payoffs</strong> — real consequences shift with the season,
+  with cumulative exposure, with who else is exposed at the same time. A single
+  payoff table hides that.</li>
+  <li><strong>Independent decisions</strong> — this tutorial treats one decision
+  in isolation. Chapter 4's later material on population dynamics and phantom
+  system models exists precisely because real infrastructure decisions are
+  coupled to each other and to how affected populations respond over time — the
+  subject of a future tutorial in this track.</li>
+  <li><strong>Elicited numbers age badly</strong> — a triangular distribution from
+  an expert interview in year one should be replaced by data as soon as data
+  exists. Treat elicitation as a placeholder, not a permanent input.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> a decision rule doesn't remove judgment from a
+decision — it makes the judgment explicit and inspectable. Choosing maximin
+instead of expected value is itself a decision worth being able to defend.
+</p>
+`,
+  codeSnippet: `
+import numpy as np
+
+# --- Decision tree / EMV for the Coastal Manager's Dilemma ---
+# Hazard probability carried over from Tutorial 01's risk model
+p_event = 0.18
+p_no_event = 1 - p_event
+
+# Payoffs in relative cost units (negative = loss)
+payoff = {
+    "close_beach": {"event": -8,  "no_event": -8},   # lost tourism, either way
+    "keep_open":   {"event": -60, "no_event": 2},     # outbreak cost vs. normal revenue
+}
+
+def expected_value(option):
+    return (payoff[option]["event"] * p_event +
+            payoff[option]["no_event"] * p_no_event)
+
+for option in payoff:
+    print(f"{option}: EMV = {expected_value(option):.2f}")
+
+best = max(payoff, key=expected_value)
+print(f"\\nDecision-rule recommendation (max EMV): {best}")
+
+# --- Fractile/triangular-style uncertainty layered on top ---
+# Three-point (min, most-likely, max) elicitation of the outbreak cost
+outbreak_cost = np.random.triangular(left=30, mode=60, right=120, size=10_000)
+
+# Uncertainty in the hazard probability itself (Beta, mean ≈ 0.18)
+p_event_samples = np.random.beta(a=3, b=14, size=10_000)
+
+emv_keep_open = (-outbreak_cost * p_event_samples
+                 + 2 * (1 - p_event_samples))
+
+p_wrong_call = np.mean(emv_keep_open < expected_value("close_beach"))
+print(f"P(keep_open turns out to be the wrong call) = {p_wrong_call:.1%}")
+`
+},
+
+{
+  id: 'hierarchical-holographic-modeling',
+  title: '03 - Identifying Risk Through Hierarchical Holographic Modeling',
+  description: 'How to find the risks nobody thought to list — from Haimes\' HHM method to modern bowtie analysis, STPA, and LLM-assisted hazard elicitation.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Intermediate",
+  createdAt: "2026-07-18",
+  image: "/images/tutorials/hhm.jpg",
+  content: `
+<p>
+Tutorials 01 and 02 assumed the scenario list already existed: a hazard
+probability, a set of options, a payoff table. But the very first question in
+the risk triplet — <em>what can happen</em> — is the one most likely to be
+answered badly, because it's the one where you don't yet know what you're
+missing. Hierarchical Holographic Modeling (HHM) is Haimes' method for finding
+those blind spots before they become the scenario nobody planned for.
+</p>
+
+<hr>
+
+<h2>Why "holographic"?</h2>
+
+<p>
+The name is a deliberate metaphor. A hologram encodes the same scene from many
+overlapping angles, and — unlike a normal photograph — any fragment of it still
+contains information about the whole picture. HHM applies that idea to risk
+identification: model the same system from several different, overlapping
+viewpoints (technical, organizational, economic, environmental, temporal...)
+instead of a single hierarchy, because any one lens will systematically miss an
+entire category of risk that a different lens would have caught immediately.
+</p>
+
+<hr>
+
+<h2>Hierarchical aspects: build a tree, not a list</h2>
+
+<p>
+The first move is structural: break the system down into a tree of topics and
+sub-topics, the same way a book's table of contents forces a subject to be
+covered exhaustively rather than as a loose bag of items. Each level of the tree
+is a checkpoint — "have I covered every branch here?" — that a flat brainstorm
+never forces you to ask.
+</p>
+
+<hr>
+
+<h2>Hierarchical overlapping coordination: the overlap is the point</h2>
+
+<p>
+Because HHM insists on multiple overlapping viewpoints, the same underlying risk
+often shows up in more than one branch. A wastewater treatment plant bypass is
+simultaneously an infrastructure-failure risk, a public-health risk, and a
+regulatory-compliance risk. Haimes treats that repetition as a feature, not
+noise: an item that only ever appears once is easy to lose track of, but an item
+that keeps resurfacing under different lenses is exactly the kind of
+cross-cutting risk worth prioritizing first.
+</p>
+
+<hr>
+
+<h2>HHM and the theory of scenario structuring</h2>
+
+<p>
+HHM isn't the only way to structure a scenario list, and a later refinement —
+by Kaplan, Haimes, and Garrick — makes an important admission: different
+structuring methods applied to the same system can produce genuinely different
+scenario sets. That means the scenario list in the risk triplet from Tutorial 01
+was never a "true," complete enumeration — it's an approximation, shaped by
+whichever structuring method produced it. HHM doesn't solve that problem; it
+just tends to produce a more complete approximation than an unstructured
+brainstorm would.
+</p>
+
+<hr>
+
+<h2>The AMP-HHM game: structuring risk as a group, not a solo exercise</h2>
+
+<p>
+The Adaptive Multiplayer HHM game turns the hierarchy-building process into a
+structured, participatory exercise: multiple stakeholders contribute and revise
+branches together, rather than one analyst imposing a structure and hoping it's
+complete. The underlying insight — that scenario identification improves when
+multiple independent perspectives are elicited and reconciled systematically —
+is the same one behind the Delphi method, and it shows up again, in a very
+current form, further down this page.
+</p>
+
+<hr>
+
+<h2>Domain-agnostic by design</h2>
+
+<p>
+Haimes applies the same method across strikingly different systems — a water
+resource system, a software acquisition program, hardening a water supply
+network, an automated highway system, food-poisoning outbreak scenarios. The
+method doesn't care what the system is; it only cares that the system is
+decomposed from more than one angle before anyone starts assigning
+probabilities to it.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Bowtie analysis</strong> and <strong>FMEA</strong> (Failure Modes and
+    Effects Analysis) are the industrial-safety descendants of the same
+    hierarchical-decomposition instinct — structured templates that force a
+    team through every failure pathway before consequences are estimated.
+  </li>
+  <li>
+    <strong>STPA</strong> (Systems-Theoretic Process Analysis) extends this
+    further to modern software-heavy systems, treating unsafe control actions
+    between components — not just component failures — as first-class risk
+    scenarios, closer in spirit to HHM's "system," not "component," framing.
+  </li>
+  <li>
+    <strong>National and enterprise risk registers</strong> (disaster-risk
+    catalogs built on frameworks like Sendai, or corporate GRC platforms) are,
+    in effect, standing HHM hierarchies — built once, refreshed periodically,
+    rather than rebuilt per project.
+  </li>
+  <li>
+    <strong>LLM-assisted hazard elicitation</strong> is the newest addition:
+    recent work uses large language models as an additional "viewpoint" in the
+    same spirit as AMP-HHM's group exercise — surfacing candidate hazards or
+    failure causes for a human analyst to review, or running structured,
+    Delphi-style elicitation rounds with an LLM standing in for an additional
+    reviewer. Current evidence suggests these tools are a genuinely useful
+    complement for surfacing candidates, not yet a substitute for the human
+    review step.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked HHM tree: coastal contamination risk</h2>
+
+<p>
+The snippet below builds a small HHM-style hierarchy for the running Coastal
+Manager's Dilemma, then flattens it into a checklist — exactly the kind of
+"risk register" a monitoring program would maintain. Note which items appear
+under more than one branch: those are the cross-cutting risks Haimes' overlap
+concept is built to surface.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Coverage isn't provable</strong> — HHM makes omissions less likely,
+  it doesn't guarantee completeness. There is no method that certifies a
+  scenario list as exhaustive.</li>
+  <li><strong>The hierarchy itself is a choice</strong> — per the theory of
+  scenario structuring, a different set of viewpoints yields a different tree,
+  and therefore a different scenario list. Document which viewpoints you used
+  and why.</li>
+  <li><strong>Structure without follow-through is just a diagram</strong> — an
+  HHM tree only pays off once each leaf gets carried into an actual probability
+  and consequence estimate (Tutorial 01) and a real decision (Tutorial 02).</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> most risk-analysis failures on record aren't
+probability errors — they're scenarios that were never on the list in the
+first place. HHM's entire value is spent before a single number gets
+calculated.
+</p>
+`,
+  codeSnippet: `
+# A minimal HHM tree for coastal contamination risk —
+# five overlapping viewpoints on the same system
+hhm = {
+    "Point-source pollution": [
+        "Wastewater treatment plant bypass",
+        "Industrial discharge",
+        "Marina / vessel waste",
+    ],
+    "Non-point-source pollution": [
+        "Agricultural runoff",
+        "Urban stormwater",
+        "Wastewater treatment plant bypass",  # <- overlaps with the branch above
+    ],
+    "Hydrodynamic & climatic": [
+        "Low flushing / tidal exchange",
+        "Heavy rainfall events",
+        "Sea-level rise altering circulation",
+    ],
+    "Monitoring gaps": [
+        "Sparse in-situ sampling network",
+        "Satellite revisit / cloud-cover gaps",
+        "Sensor drift / calibration lag",
+    ],
+    "Institutional & regulatory": [
+        "Delayed inter-agency data sharing",
+        "Enforcement gaps on discharge permits",
+        "Industrial discharge",  # <- overlaps with point-source branch
+    ],
+}
+
+def flatten_hhm(tree):
+    """Turn the hierarchy into a flat risk-register checklist, keeping
+    track of every branch each item appears under."""
+    register = {}
+    for branch, items in tree.items():
+        for item in items:
+            register.setdefault(item, []).append(branch)
+    return register
+
+register = flatten_hhm(hhm)
+
+# Items under more than one branch are the "hierarchical overlapping
+# coordination" Haimes describes — cross-cutting risks worth prioritizing.
+for item, branches in sorted(register.items(), key=lambda kv: -len(kv[1])):
+    tag = "  <- cross-cutting" if len(branches) > 1 else ""
+    print(f"{item:40s} {branches}{tag}")
+`
+},
+
+{
+  id: 'multiobjective-tradeoff',
+  title: '04 - Multiobjective Trade-off Analysis: The Surrogate Worth Method',
+  description: 'Why "minimize risk" and "minimize cost" can\'t both be optimized at once, and how the Surrogate Worth Trade-off method finds the best compromise on the Pareto frontier.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-19",
+  image: "/images/tutorials/multiobjective-tradeoff.jpg",
+  content: `
+<p>
+Tutorial 02 folded a decision tree down to a single expected value — which
+quietly assumed cost and risk had already been converted into one comparable
+number. In practice they usually can't be. Lower a treatment plant's discharge
+limit and you cut contamination risk, but cost rises; relax it and cost falls,
+but risk rises. There is no treatment level that is best on both counts at
+once. Multiobjective trade-off analysis is what you reach for the moment "best"
+stops meaning a single number.
+</p>
+
+<hr>
+
+<h2>What multiple environmental objectives actually look like</h2>
+
+<p>
+Haimes and Hall developed this method on exactly this kind of problem: river
+basin management with objectives like minimizing treatment cost, maximizing
+dissolved oxygen, and minimizing regional economic disruption — objectives that
+pull in different directions by physical necessity, not by poor planning. Coastal
+water-quality management inherits the same structure: minimize public-health
+risk, minimize cost, and (often) minimize ecological disruption from whatever
+engineering fix reduces the first two.
+</p>
+
+<hr>
+
+<h2>The noninferior (Pareto-optimal) set</h2>
+
+<p>
+When objectives genuinely conflict, there's no single optimum — there's a set of
+<strong>noninferior solutions</strong>: points where you cannot improve one
+objective without making at least one other objective worse. Every solution
+outside that set is simply dominated and can be discarded outright; every
+solution inside it is a legitimate candidate, and choosing among them is a
+question of judgment, not arithmetic.
+</p>
+
+<hr>
+
+<h2>Properly noninferior: ruling out the pathological cases</h2>
+
+<p>
+Not every point on the mathematical frontier is a sensible candidate. A solution
+is only <strong>properly</strong> noninferior if the trade-off ratios near it stay
+bounded — improving one objective by a tiny amount shouldn't cost an unbounded
+amount of another. Points where that ratio blows up are technically noninferior
+but practically meaningless, and the method is built to exclude them before a
+decision-maker ever sees the frontier.
+</p>
+
+<hr>
+
+<h2>The Surrogate Worth Trade-off (SWT) method</h2>
+
+<p>
+Eliciting a full multi-attribute utility function from a decision-maker up front
+is hard — people are far better at judging a specific trade-off than at
+specifying their entire preference structure in advance. SWT works with that
+limitation instead of against it:
+</p>
+
+<ol>
+  <li><strong>Trace the frontier.</strong> Optimize one objective while
+  constraining the others to fixed levels (the ε-constraint method), sweeping
+  those levels to generate the full noninferior set point by point.</li>
+  <li><strong>Compute trade-off ratios.</strong> At each point on the frontier,
+  the shadow price of each constraint gives the local exchange rate between
+  objectives — how much of objective A you'd gain per unit of objective B given
+  up, right at that point.</li>
+  <li><strong>Ask for a surrogate worth.</strong> Instead of a full utility
+  function, the decision-maker rates each trade-off on a simple scale (e.g. −10
+  to +10): is giving up this much of B for that much of A clearly worthwhile,
+  clearly not, or somewhere in between?</li>
+  <li><strong>Find where worth crosses zero.</strong> The point where the
+  surrogate worth function changes sign is where the decision-maker is
+  indifferent to the trade-off — neither clearly for nor against it. That point
+  is the best compromise solution.</li>
+</ol>
+
+<hr>
+
+<h2>How SWT relates to the utility-function approach</h2>
+
+<p>
+SWT isn't a rejection of utility theory — it's a practical shortcut through it.
+Under reasonable conditions, the surrogate worth function behaves like the
+derivative of an implicit utility function that was never fully specified.
+Instead of asking a decision-maker to hand over their entire utility function,
+SWT only asks for its local slope at a handful of points on the frontier — enough
+to locate the zero-crossing without ever writing the function down.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Generating the frontier</strong> — sweeping ε-constraints by hand
+    works for smooth, convex, low-dimensional problems, which is what SWT was
+    built for in the 1970s. Today, evolutionary multiobjective algorithms
+    (NSGA-II, NSGA-III, MOEA/D) approximate the whole Pareto front directly, even
+    for nonlinear, non-convex, or black-box objectives — including one modeled
+    by a machine-learning classifier instead of a closed-form equation.
+  </li>
+  <li>
+    <strong>Selecting the compromise point</strong> — modern interactive
+    multiobjective optimization tools often replace scalar surrogate-worth
+    ratings with direct visual exploration: parallel-coordinate plots or 3D
+    Pareto-surface views the decision-maker can inspect and click on, rather than
+    scoring individual trade-off ratios in the abstract.
+  </li>
+  <li>
+    <strong>Proper noninferiority still matters</strong> — raw NSGA-II output
+    isn't automatically filtered for pathological, unbounded trade-offs the way
+    the analytic SWT derivation was; it's worth checking generated fronts for
+    exactly the degenerate points Haimes' "proper" criterion was designed to
+    exclude.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked frontier: cost vs. risk in the Coastal Manager's Dilemma</h2>
+
+<p>
+The snippet below builds a small two-objective version of the treatment-level
+decision: cost rises steeply as treatment approaches its maximum, while residual
+risk falls toward an irreducible floor. It sweeps ε (an allowed risk ceiling) to
+trace the frontier, computes the local trade-off ratio at each point, and
+simulates a surrogate-worth judgment to locate the zero-crossing — the same
+mechanics as SWT, without requiring an actual decision-maker interview to follow
+along.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Surrogate worth is still elicited, not measured</strong> — it
+  inherits the same aging-badly problem as the fractile method from Tutorial 02.
+  Revisit it as preferences or evidence change.</li>
+  <li><strong>Two or three objectives is the sweet spot</strong> — the classical
+  ε-constraint sweep and surrogate-worth elicitation get unwieldy past three
+  objectives; that's exactly the gap evolutionary algorithms were built to
+  close.</li>
+  <li><strong>A frontier isn't a decision</strong> — it narrows the field from
+  infinite alternatives to a handful of legitimate ones. Something (a
+  decision-maker, a policy, a vote) still has to pick a point on it.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> when two objectives genuinely conflict, arguing
+about which single number is "best" is the wrong debate. The right debate is
+about where on the frontier to stand — and SWT exists to make that debate
+explicit instead of buried inside someone's unstated utility function.
+</p>
+`,
+  codeSnippet: `
+import numpy as np
+
+# Toy treatment-level problem: x in [0, 1], 0 = no treatment, 1 = full treatment
+def cost(x):
+    return 100 * x**1.5          # treatment cost rises steeply near full treatment
+
+def risk(x):
+    return 0.9 * (1 - x)**2 + 0.02   # residual contamination risk floor at 0.02
+
+# --- Trace the noninferior frontier via epsilon-constraint ---
+# For this monotone toy problem the risk constraint binds exactly,
+# so x*(eps) can be solved for directly rather than via a numeric optimizer.
+epsilons = np.linspace(risk(1.0), risk(0.0), 40)
+xs = np.clip(1 - np.sqrt(np.maximum(epsilons - 0.02, 0) / 0.9), 0, 1)
+costs = cost(xs)
+risks = risk(xs)
+
+# --- Trade-off ratio (shadow price): d(cost) / d(risk) along the frontier ---
+trade_off = np.gradient(costs, risks)
+
+# --- Simulated surrogate worth: a decision-maker's judgment of each
+# trade-off ratio, on a -10..+10 scale (illustrative approximation) ---
+surrogate_worth = 5 - 2 * np.log10(np.abs(trade_off) + 1e-6)
+
+# Best compromise: where surrogate worth crosses from positive to negative
+sign_change = np.where(np.diff(np.sign(surrogate_worth)))[0]
+if len(sign_change):
+    i = sign_change[0]
+    print(f"Best-compromise treatment level x = {xs[i]:.2f}  "
+          f"(cost={costs[i]:.1f}, risk={risks[i]:.3f})")
+else:
+    print("No zero-crossing in this range — widen the epsilon sweep.")
+`
+},
+
+{
+  id: 'uncertainty-sensitivity-analysis',
+  title: '05 - Defining Uncertainty and Sensitivity Analysis',
+  description: 'Sensitivity, stability, and irreversibility as distinct properties of a model — and the Uncertainty Sensitivity Index Method for deciding which assumptions actually matter.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-20",
+  image: "/images/tutorials/uncertainty-sensitivity.jpg",
+  content: `
+<p>
+Every tutorial in this series so far has rested on a model: a hazard
+probability, a payoff table, a cost-vs-risk curve. None of that machinery is
+worth much if you don't know how much the model's output actually depends on
+its shakiest assumptions — or whether getting one of those assumptions wrong is
+something you can still walk back from. That's the question this chapter is
+built around.
+</p>
+
+<hr>
+
+<h2>Four properties worth telling apart</h2>
+
+<p>
+Haimes and Hall's 1977 paper on civil systems named four distinct properties of
+how a system responds to change, and it's worth keeping them separate rather
+than lumping them all under "sensitivity":
+</p>
+
+<ul>
+  <li><strong>Sensitivity</strong> — how much the output moves for a given
+  change in an input or parameter.</li>
+  <li><strong>Responsivity</strong> — how quickly that movement actually
+  happens; a system can be highly sensitive but slow to respond, or mildly
+  sensitive but react almost instantly.</li>
+  <li><strong>Stability</strong> — whether the system settles back to
+  equilibrium after a perturbation, or drifts away from it.</li>
+  <li><strong>Irreversibility</strong> — whether a change, once it happens, can
+  be undone at all, even if the original cause is removed.</li>
+</ul>
+
+<p>
+The last one is the one classical sensitivity analysis is least equipped to
+catch. A coastal lagoon can absorb nutrient loading for years, staying visibly
+stable — until a threshold is crossed and it flips to a persistently turbid,
+low-oxygen state that doesn't reverse just because the loading stops. Ecologists
+call this a regime shift; economists studying similar problems call the
+corresponding caution a preference for keeping options open. Sensitivity
+analysis alone will not warn you about it — you need a model capable of
+representing a threshold in the first place.
+</p>
+
+<hr>
+
+<h2>Where modeling error actually comes from</h2>
+
+<p>
+Every model in this series carries error from more than one source, and they
+don't respond to the same fix:
+</p>
+
+<ul>
+  <li><strong>Structural error</strong> — the functional form itself is wrong or
+  incomplete (a missing interaction term, an assumed linear relationship that
+  isn't). No amount of better data fixes this; only a better model does.</li>
+  <li><strong>Parameter error</strong> — the structure is right, but the values
+  plugged into it aren't well known. More data, or better estimation, narrows
+  this.</li>
+  <li><strong>Data error</strong> — measurement noise, sampling gaps, sensor
+  drift — the raw inputs feeding both the structure and the parameters.</li>
+</ul>
+
+<hr>
+
+<h2>A taxonomy that survives contact with practice</h2>
+
+<p>
+The distinction that has proven most durable, in this book and in the field
+since, is between <strong>aleatory</strong> and <strong>epistemic</strong>
+uncertainty. Aleatory uncertainty is irreducible natural variability — this
+year's rainfall being wetter or drier than average isn't a knowledge gap, it's
+the system being genuinely stochastic. Epistemic uncertainty is a knowledge
+gap — the true decay rate of a pollutant, the correct model structure — and
+unlike aleatory uncertainty, it shrinks as better data or better models become
+available. Confusing the two leads to the wrong response every time: no amount
+of additional monitoring will narrow uncertainty that is genuinely aleatory, and
+no amount of statistical averaging fixes uncertainty that is really about not
+yet knowing the right model.
+</p>
+
+<hr>
+
+<h2>The Uncertainty Sensitivity Index Method (USIM)</h2>
+
+<p>
+Not every uncertain parameter deserves equal attention. USIM's proposal: rank
+parameters by how much their own plausible range of uncertainty propagates into
+output uncertainty, then spend data-collection and model-refinement effort on
+the parameters that actually move the answer — not the ones that happen to be
+easiest to study. Haimes and colleagues then folded this directly into design:
+once you know which parameters a design is most sensitive to, that ranking
+becomes part of the optimization problem itself, so the resulting design stays
+acceptable across the plausible parameter range rather than being optimal for
+one nominal guess and fragile everywhere else.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Global sensitivity analysis (GSA)</strong> — variance-based methods
+    (Sobol indices, the Morris screening method, FAST) are the direct,
+    computationally rigorous descendant of USIM-style ranking: instead of
+    varying one parameter at a time, they vary all of them jointly and
+    decompose the output variance into each parameter's contribution, including
+    interaction effects a one-at-a-time sweep can miss entirely.
+  </li>
+  <li>
+    <strong>Surrogate models</strong> — a full Sobol analysis can need tens of
+    thousands of model evaluations, which is a problem when the model is an
+    expensive hydrodynamic simulation or a large ML model. Fitting a cheap
+    surrogate (commonly a Gaussian process emulator) to a modest sample of
+    real runs, then running the sensitivity analysis on the surrogate, is now
+    standard practice for exactly this reason.
+  </li>
+  <li>
+    <strong>Robust optimization and info-gap decision theory</strong> — modern,
+    more formal versions of USIM's integration with design: rather than
+    optimizing for one nominal parameter set, these frameworks explicitly
+    optimize for acceptable performance across an entire uncertainty envelope,
+    which is precisely what sections 6.7–6.9 were reaching for with the tools
+    available in the 1990s.
+  </li>
+  <li>
+    <strong>Irreversibility</strong> gets handled separately, and still mostly
+    outside sensitivity analysis proper — regime-shift and tipping-point theory
+    in ecology, and real-options theory in economics (which puts a quantifiable
+    value on the option to wait before taking an action you can't undo), are
+    today's formal treatments of a property Haimes flagged as distinct back in
+    1977.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked comparison: one-at-a-time vs. variance-based</h2>
+
+<p>
+The snippet below runs both approaches on the same small model — a proxy for
+contamination risk as a function of discharge rate, flushing time, and decay
+rate. USIM-style, it first sweeps each parameter across its own range with the
+others held at nominal, ranking parameters by output swing. Then it samples all
+three jointly and estimates each parameter's share of output variance via its
+correlation with the output — a simplified stand-in for a proper Sobol index,
+useful for seeing how the two rankings can disagree once interactions are
+allowed to show up.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>One-at-a-time misses interactions</strong> — if two parameters
+  only matter in combination, holding one at nominal while varying the other
+  hides that entirely. That's the main reason variance-based GSA replaced it.</li>
+  <li><strong>The correlation-based proxy below is a simplification</strong> —
+  it's useful for building intuition, not a substitute for a properly computed
+  Sobol index (via a library such as SALib) in real work.</li>
+  <li><strong>No sensitivity analysis detects irreversibility on its own</strong>
+  — it tells you how much output moves, not whether the system can move back.
+  That needs an explicit dynamical or threshold model.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> a precise-looking model output is worth nothing
+if you can't say which assumptions it actually depends on, and whether being
+wrong about one of them is a mistake you could still undo.
+</p>
+`,
+  codeSnippet: `
+import numpy as np
+
+# Toy model: a proxy for contamination risk as a function of three
+# uncertain parameters (illustrative, not calibrated to real data)
+def contamination_risk(discharge, flushing_days, decay_rate):
+    return discharge * flushing_days * np.exp(-decay_rate * flushing_days)
+
+# Nominal values and plausible ranges for each parameter
+params = {
+    "discharge":     {"nominal": 50,  "range": (20, 80)},    # kg/day
+    "flushing_days": {"nominal": 5,   "range": (2, 12)},     # days
+    "decay_rate":    {"nominal": 0.3, "range": (0.1, 0.6)},  # 1/day
+}
+
+# --- One-at-a-time (USIM-style) sensitivity ---
+print("One-at-a-time sensitivity (output range when only this parameter varies):")
+oat_ranges = {}
+for name, spec in params.items():
+    outputs = []
+    for val in np.linspace(*spec["range"], 50):
+        kwargs = {k: v["nominal"] for k, v in params.items()}
+        kwargs[name] = val
+        outputs.append(contamination_risk(**kwargs))
+    oat_ranges[name] = max(outputs) - min(outputs)
+    print(f"  {name:15s} output range = {oat_ranges[name]:8.1f}")
+
+print(f"\\nOAT priority for uncertainty reduction (highest impact first): "
+      f"{sorted(oat_ranges, key=oat_ranges.get, reverse=True)}")
+
+# --- Modern complement: Monte Carlo variance-based sensitivity ---
+# Samples all parameters jointly; each parameter's correlation with the
+# output is used here as a simplified proxy for a first-order Sobol index.
+n = 20_000
+samples = {name: np.random.uniform(*spec["range"], n) for name, spec in params.items()}
+outputs = contamination_risk(**samples)
+
+print("\\nMonte Carlo variance-based sensitivity (approx. first-order share):")
+for name in params:
+    corr = np.corrcoef(samples[name], outputs)[0, 1]
+    print(f"  {name:15s} approx. variance share = {corr**2:.1%}")
+`
+},
+
+{
+  id: 'risk-filtering-ranking-management',
+  title: '06 - Risk Filtering, Ranking, and Management (RFRM)',
+  description: 'An eight-phase funnel — developed by Haimes, Kaplan, and Lambert — for going from hundreds of HHM-identified scenarios to the handful worth full quantitative treatment.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-21",
+  image: "/images/tutorials/risk-filtering-ranking.jpg",
+  content: `
+<p>
+Tutorial 03's HHM tree does its job well — often too well. Decompose a real
+system from several overlapping viewpoints and you don't get a tidy handful of
+scenarios, you get hundreds. Running a full quantitative risk assessment (the
+kind built in Tutorials 01 and 02) on every single one isn't just impractical,
+it's the wrong use of scarce analytical effort. Risk Filtering, Ranking, and
+Management (RFRM) — developed by Haimes, Kaplan, and Lambert — is the funnel
+that decides which few scenarios actually earn that effort.
+</p>
+
+<hr>
+
+<h2>What came before RFRM</h2>
+
+<p>
+Comparative risk assessment in the 1990s (the tradition behind the EPA-era
+"Comparing Risks" studies) had already established that risks could be ranked
+against each other using simplified, often qualitative criteria rather than
+full quantification of each one individually. RFRM's contribution was to make
+that ranking process itself systematic and repeatable, and to wire it directly
+into HHM's scenario tree rather than treating scenario identification and
+scenario ranking as separate exercises.
+</p>
+
+<hr>
+
+<h2>The eight phases</h2>
+
+<ol>
+  <li><strong>Scenario identification.</strong> Build the HHM tree describing
+  the system's intended, "as planned" success scenario — this is Tutorial 03,
+  reused directly as the starting point.</li>
+  <li><strong>Scenario filtering.</strong> Narrow the tree to the scenarios
+  that actually fall within the current decision-maker's responsibility and
+  authority. A coastal water-quality manager can act on a discharge permit
+  violation; they usually can't act on an upstream nation's agricultural
+  policy, however real that risk is.</li>
+  <li><strong>Bi-criteria filtering and ranking.</strong> Score what's left on
+  two criteria at once — typically likelihood and consequence — using a simple
+  ordinal scale, and cut anything that doesn't clear a minimum bar on both.</li>
+  <li><strong>Multi-criteria evaluation.</strong> Add further criteria beyond
+  the first two — detectability, manageability, cost of mitigation, public
+  visibility — to refine the surviving list further.</li>
+  <li><strong>Quantitative ranking.</strong> Where the scenario justifies it,
+  move from ordinal scores toward genuinely quantitative likelihood and
+  consequence estimates, incorporating how resilient, robust, and redundant
+  the system already is against that scenario.</li>
+  <li><strong>Risk management.</strong> For the scenarios that made it this
+  far, identify concrete management options and estimate each one's cost,
+  performance benefit, and risk reduction — this is exactly the decision-tree
+  and trade-off machinery from Tutorials 02 and 04, now pointed at a
+  short, prioritized list instead of one scenario picked in advance.</li>
+  <li><strong>Safeguarding against missing critical items.</strong> Go back and
+  check the options chosen in Phase VI against everything filtered <em>out</em>
+  in Phases II–V. Filtering is meant to defer attention, not permanently
+  discard it — this phase exists specifically to catch a scenario that was cut
+  too early.</li>
+  <li><strong>Operational feedback.</strong> Feed real operating experience
+  back into the filtering and ranking criteria — and back into the HHM tree
+  itself — so the whole funnel improves the next time it's used.</li>
+</ol>
+
+<p>
+Haimes, Kaplan, and Lambert were explicit that these eight phases describe a
+philosophy, not a mechanical algorithm to run once and forget: filtering is a
+precursor to considering the full set of risk scenarios, never a substitute for
+it. Their own case study applied the framework to operations other than
+war — a deliberately different domain from anything earlier in this series, to
+show the funnel doesn't care what kind of system it's filtering.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Risk matrices</strong> — the 5×5 likelihood-consequence heat map
+    used across almost every industry's risk register today is Phase III's
+    bi-criteria filtering, essentially unchanged, just given a standard visual
+    form.
+  </li>
+  <li>
+    <strong>MCDA software</strong> — Phase IV's multi-criteria evaluation is
+    formalized today with the same weighted-scoring and AHP-style tools already
+    covered in Tutorial 02's decision-matrix section, replacing ad hoc scoring
+    with an auditable weighting scheme.
+  </li>
+  <li>
+    <strong>GRC platforms</strong> — enterprise risk-management software turns
+    Phases I–VI into a living database rather than a one-time study, and treats
+    Phase VIII's feedback loop as a standing review cycle instead of an
+    afterthought.
+  </li>
+  <li>
+    <strong>Automated first-pass triage</strong> — when the candidate list runs
+    into the hundreds or thousands (pulled from incident logs, anomaly
+    detection on monitoring data, or an LLM-assisted HHM brainstorm per
+    Tutorial 03), clustering or anomaly-scoring models increasingly do a first
+    filtering pass before a human analyst applies Phase IV's multi-criteria
+    judgment — the same funnel, with a faster first stage.
+  </li>
+  <li>
+    <strong>Phase VII has a direct modern analog</strong> in independent review
+    or red-teaming processes built specifically to re-examine what an automated
+    or preliminary filter discarded, rather than trusting the first pass by
+    default.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked filter: from thirteen scenarios to a short list</h2>
+
+<p>
+The snippet below runs Phases III–V on the risk register built in Tutorial 03.
+It scores every item on likelihood and consequence (Phase III), cuts anything
+below a threshold, then layers on manageability and detectability (Phase IV) to
+produce a final priority ranking (Phase V) — the short list that would move on
+to the full quantitative treatment from Tutorials 01 and 02.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Ordinal scores hide real disagreement</strong> — two reviewers
+  rarely agree on whether something is a "3" or a "4"; without a shared rubric,
+  bi-criteria filtering just moves subjectivity earlier in the process instead
+  of removing it.</li>
+  <li><strong>Filtering can systematically underweight low-likelihood, high
+  consequence scenarios</strong> — a naive multiplicative score treats a 1%
+  chance of catastrophe the same as a 50% chance of a minor issue whenever the
+  product happens to match, which is precisely the failure mode Tutorial 07
+  in this series (extreme events and the fallacy of expected value) exists to
+  correct.</li>
+  <li><strong>Phase VII is easy to skip and expensive to skip</strong> — under
+  time pressure, the "go back and check what you filtered out" step is the one
+  most likely to be dropped, and the one whose absence is hardest to notice
+  until something filtered out early turns out to matter.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> filtering exists to allocate scarce analytical
+attention, not to make a risk disappear. Everything cut in Phases II–V is still
+real — it's just been deferred, and Phase VII exists to make sure "deferred"
+doesn't quietly become "forgotten."
+</p>
+`,
+  codeSnippet: `
+# Risk register carried over from Tutorial 03's HHM tree
+register = [
+    "Wastewater treatment plant bypass", "Industrial discharge",
+    "Marina / vessel waste", "Agricultural runoff", "Urban stormwater",
+    "Low flushing / tidal exchange", "Heavy rainfall events",
+    "Sea-level rise altering circulation", "Sparse in-situ sampling network",
+    "Satellite revisit / cloud-cover gaps", "Sensor drift / calibration lag",
+    "Delayed inter-agency data sharing", "Enforcement gaps on discharge permits",
+]
+
+# --- Phase III: Bi-criteria filtering (likelihood x consequence, 1-5 ordinal) ---
+# Illustrative scores a manager might assign during a filtering workshop
+likelihood = {
+    "Wastewater treatment plant bypass": 3, "Industrial discharge": 2,
+    "Marina / vessel waste": 2, "Agricultural runoff": 4, "Urban stormwater": 4,
+    "Low flushing / tidal exchange": 3, "Heavy rainfall events": 4,
+    "Sea-level rise altering circulation": 2, "Sparse in-situ sampling network": 3,
+    "Satellite revisit / cloud-cover gaps": 3, "Sensor drift / calibration lag": 2,
+    "Delayed inter-agency data sharing": 3, "Enforcement gaps on discharge permits": 2,
+}
+consequence = {
+    "Wastewater treatment plant bypass": 5, "Industrial discharge": 4,
+    "Marina / vessel waste": 2, "Agricultural runoff": 3, "Urban stormwater": 3,
+    "Low flushing / tidal exchange": 3, "Heavy rainfall events": 3,
+    "Sea-level rise altering circulation": 4, "Sparse in-situ sampling network": 3,
+    "Satellite revisit / cloud-cover gaps": 2, "Sensor drift / calibration lag": 2,
+    "Delayed inter-agency data sharing": 3, "Enforcement gaps on discharge permits": 3,
+}
+
+bi_criteria_score = {item: likelihood[item] * consequence[item] for item in register}
+
+THRESHOLD = 10
+survivors = {item: s for item, s in bi_criteria_score.items() if s >= THRESHOLD}
+
+print(f"Phase III filtered {len(register)} scenarios down to {len(survivors)}:")
+for item, s in sorted(survivors.items(), key=lambda kv: -kv[1]):
+    print(f"  {item:38s} bi-criteria score = {s}")
+
+# --- Phase IV: Multi-criteria evaluation on the survivors ---
+# manageability / detectability, 1 (hard) to 5 (easy); default to neutral (3)
+manageability = {"Wastewater treatment plant bypass": 4, "Industrial discharge": 3,
+                  "Agricultural runoff": 2, "Urban stormwater": 2,
+                  "Heavy rainfall events": 1, "Sea-level rise altering circulation": 1}
+detectability = {"Wastewater treatment plant bypass": 4, "Industrial discharge": 3,
+                  "Agricultural runoff": 2, "Urban stormwater": 3,
+                  "Heavy rainfall events": 5, "Sea-level rise altering circulation": 2}
+
+# Phase V priority favors high likelihood x consequence that is ALSO
+# hard to manage and hard to detect — those need attention first
+priority = {
+    item: bi_criteria_score[item]
+          * (6 - manageability.get(item, 3))
+          * (6 - detectability.get(item, 3))
+    for item in survivors
+}
+
+print("\\nPhase V priority ranking (candidates for full quantitative treatment):")
+for item, p in sorted(priority.items(), key=lambda kv: -kv[1]):
+    print(f"  {item:38s} priority = {p}")
+`
+},
+
+{
+  id: 'extreme-events-pmrm',
+  title: '07 - Risk of Extreme Events and the Fallacy of Expected Value',
+  description: 'Why two policies with nearly identical expected damage can hide wildly different catastrophic-tail risk — and the Partitioned Multiobjective Risk Method (PMRM) built to expose it.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-22",
+  image: "/images/tutorials/extreme-events-pmrm.jpg",
+  content: `
+<p>
+Tutorial 04's Surrogate Worth Trade-off method quietly assumed each objective
+could be summarized by a single number before trading it off against another.
+For a damage or loss distribution, the obvious single number is its expected
+value — and this chapter's entire argument is that this obvious choice is a
+trap. Two designs can share almost identical expected damage while one of them
+hides a catastrophic tail the other doesn't have. Averaging is exactly the
+operation that erases that difference.
+</p>
+
+<hr>
+
+<h2>The fallacy, stated plainly</h2>
+
+<p>
+Expected value is a probability-weighted average across an entire outcome
+distribution. That's precisely the problem: a design with a small chance of
+routine, moderate damage and a design with a much smaller chance of
+catastrophic damage can be engineered to produce the <em>same</em> expected
+value, because averaging doesn't care how the probability mass is arranged
+across the outcome range — only where its center of mass ends up. No
+decision-maker actually treats those two designs as equivalent, yet a
+comparison based on expected value alone reports them as identical.
+</p>
+
+<hr>
+
+<h2>The Partitioned Multiobjective Risk Method (PMRM)</h2>
+
+<p>
+Haimes' fix is direct: stop collapsing the whole damage distribution into one
+number. Instead, partition the probability axis into regimes and compute a
+separate conditional expected value within each one. The standard version uses
+three regimes:
+</p>
+
+<ul>
+  <li><strong>High-exceedance, low-consequence</strong> — the routine,
+  everyday range of outcomes.</li>
+  <li><strong>Intermediate-exceedance, intermediate-consequence</strong> — the
+  middle ground.</li>
+  <li><strong>Low-exceedance, high-consequence (LE/HC)</strong> — the extreme
+  tail: rare, but severe when it happens.</li>
+</ul>
+
+<p>
+Each regime gets its own conditional expected-value function, conventionally
+labeled:
+</p>
+
+<ul>
+  <li><code>f2</code> — conditional expected damage in the high-probability,
+  low-consequence regime.</li>
+  <li><code>f3</code> — conditional expected damage in the intermediate regime.</li>
+  <li><code>f4</code> — conditional expected damage in the low-probability,
+  high-consequence (extreme-event) regime — the number ordinary expected value
+  quietly buries.</li>
+  <li><code>f5</code> — the ordinary, unconditional expected value, kept
+  explicitly for comparison against <code>f2</code>–<code>f4</code>, not as a
+  replacement for them.</li>
+</ul>
+
+<p>
+Because these are now several distinct numbers instead of one, they become
+several distinct objectives — Tutorial 04's trade-off machinery applies
+directly. A decision-maker can trade "minimize routine cost" against "minimize
+extreme-event exposure" explicitly, instead of trusting a single blended figure
+to represent both at once.
+</p>
+
+<hr>
+
+<h2>A deliberately unresolved question: where does "extreme" begin?</h2>
+
+<p>
+The boundary between the intermediate and extreme regimes is a modeling choice,
+not a fact of nature — and <code>f4</code> turns out to be genuinely sensitive
+both to where that boundary is drawn and to which distribution is assumed for
+the tail. Haimes and later researchers studied this sensitivity directly,
+looking for distribution-free bounds on <code>f4</code> so the result wouldn't
+depend too heavily on an arbitrary distributional assumption about a region of
+the data where, by definition, observations are scarce.
+</p>
+
+<hr>
+
+<h2>The dam-failure illustration</h2>
+
+<p>
+Haimes' own worked example applies PMRM to dam-failure and extreme-flood risk,
+comparing engineering or operating policies not just on expected annual
+damage, but explicitly on <code>f4</code> — their conditional exposure to the
+extreme-event tail. Two designs with nearly identical expected annual damage
+can differ sharply in that tail exposure, which is exactly the distinction an
+expected-value-only comparison would have missed entirely.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Conditional Value at Risk (CVaR) / Expected Shortfall</strong> —
+    today's standard financial risk metric is <code>f4</code>, formalized and
+    standardized: the expected loss conditional on being beyond a given
+    quantile threshold. It's now embedded directly in banking regulation
+    precisely because regulators learned the same lesson Haimes was making
+    here — an institution's average expected loss says nothing about how bad
+    its worst case actually is.
+  </li>
+  <li>
+    <strong>Extreme Value Theory (EVT)</strong> — rather than assuming one
+    distribution shape across the whole outcome range and computing a
+    conditional tail expectation from it, EVT (the Generalized Pareto
+    Distribution, peaks-over-threshold methods) fits a distribution
+    specifically to the tail observations beyond a threshold — a direct answer
+    to the "f4 is sensitive to the assumed distribution" problem flagged
+    above.
+  </li>
+  <li>
+    <strong>Dam and floodplain engineering</strong> now routinely reports an
+    expected annual damage figure <em>and</em> a separate "100-year" or
+    "500-year event" tail metric side by side — <code>f5</code> next to
+    <code>f4</code>, standard practice today rather than a novel proposal.
+  </li>
+  <li>
+    <strong>PMRM itself has traveled well beyond water resources</strong> —
+    it's been applied to portfolio selection in finance, where researchers
+    found its <code>f4</code> measure a more informative risk signal than
+    ordinary volatility specifically under extreme market conditions. The
+    average-versus-tail distinction keeps reappearing outside engineering
+    entirely, under different names.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked comparison: two policies, similar average, different tail</h2>
+
+<p>
+The snippet below simulates two synthetic flood-protection policies with
+nearly identical ordinary expected damage (<code>f5</code>), then partitions
+each into a routine regime and a 5%-probability extreme-event tail to compute
+<code>f4</code>. Watch how close the two policies' <code>f5</code> values stay
+compared to how far apart their <code>f4</code> values end up — that gap is
+exactly what expected value alone would have hidden.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>The tail is where you have the least data</strong> — by
+  construction, the LE/HC regime is defined by scarcity of observations, which
+  is exactly why <code>f4</code> is so sensitive to distributional assumptions
+  in the first place.</li>
+  <li><strong>Choosing the partition boundary is itself a decision</strong> —
+  moving the threshold that defines "extreme" changes <code>f4</code>,
+  sometimes substantially. Report the sensitivity, not just the point
+  estimate.</li>
+  <li><strong>More objectives means SWT-style trade-off work isn't optional</strong>
+  — once <code>f2</code>, <code>f3</code>, and <code>f4</code> are separate
+  objectives, someone still has to decide how much extreme-event exposure is
+  worth trading off against routine cost. PMRM surfaces that decision; it
+  doesn't make it for you.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> whenever a single expected value is used to
+compare two risky alternatives, ask what it's averaging over — and specifically,
+what it's averaging away.
+</p>
+`,
+  codeSnippet: `
+import numpy as np
+
+rng = np.random.default_rng(42)
+
+# Two flood-protection design policies, simulated as annual damage
+# distributions (illustrative, not calibrated to a real site).
+# Built to have nearly identical ORDINARY expected damage (f5)...
+n = 200_000
+damage_A = rng.lognormal(mean=1.95, sigma=0.6, size=n)
+damage_B = np.where(rng.random(n) < 0.995,
+                     rng.lognormal(mean=1.85, sigma=0.4, size=n),   # ...but B trades
+                     rng.lognormal(mean=5.5, sigma=0.5, size=n))    # a fatter, rarer tail
+
+def pmrm_partition(damage, tail_prob=0.05):
+    """Partition into a routine regime and an extreme (LE/HC) tail regime.
+    Returns f5 (ordinary expected value) and f4 (conditional expected
+    value within the extreme-event tail)."""
+    threshold = np.quantile(damage, 1 - tail_prob)
+    tail_mask = damage >= threshold
+    f5 = damage.mean()                     # ordinary, unconditional expected value
+    f4 = damage[tail_mask].mean()          # conditional expectation, extreme regime
+    f23 = damage[~tail_mask].mean()        # conditional expectation, everything else
+    return f5, f4, f23
+
+for name, damage in [("Policy A", damage_A), ("Policy B", damage_B)]:
+    f5, f4, f23 = pmrm_partition(damage, tail_prob=0.05)
+    print(f"{name}: f5 (ordinary E) = {f5:6.2f}   "
+          f"f4 (extreme-event conditional E) = {f4:7.2f}   "
+          f"routine-regime E = {f23:6.2f}")
+`
+},
+
+{
+  id: 'multiobjective-decision-trees',
+  title: '08 - Multiobjective Decision-Tree Analysis',
+  description: 'Why gathering more information before deciding can reshape the entire noninferior set — a phenomenon with no equivalent in an ordinary, single-objective decision tree.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-23",
+  image: "/images/tutorials/multiobjective-decision-trees.jpg",
+  content: `
+<p>
+This tutorial is where three earlier ones converge. Tutorial 02 built a
+decision tree that folds back to a single expected value. Tutorial 04 showed
+that when objectives genuinely conflict, there's no single best point — only a
+noninferior frontier. Tutorial 07 showed that even one objective, like damage,
+often needs two numbers instead of one: an ordinary expected value and a
+conditional expectation of its extreme-event tail. Multiobjective
+decision-tree analysis — introduced by Haimes, Li, and Tulsiani, extending
+Howard Raiffa's classical single-objective tree — is what happens when you
+stop pretending any of that collapses to one number at each node.
+</p>
+
+<hr>
+
+<h2>Why the rollback itself has to change</h2>
+
+<p>
+An ordinary decision tree folds back through simple backward induction: at a
+chance node, replace the branch with its expected value; at a decision node,
+keep only the branch with the best expected value and discard the rest. That
+works because at every node, there's a single scalar to compare.
+</p>
+
+<p>
+Once a leaf carries a <em>vector</em> of objectives instead of one number, the
+chance-node step still works — you take a probability-weighted, component-wise
+expectation across each objective separately. But the decision-node step
+breaks: you generally can't say which branch's vector "wins" unless one branch
+strictly dominates every other branch in every objective simultaneously. Most
+of the time, none does.
+</p>
+
+<hr>
+
+<h2>The structural difference, stated precisely</h2>
+
+<p>
+A single-objective tree collapses to one optimal path, because dominated
+branches can be discarded immediately at every node. A multiobjective tree
+cannot do that — it has to carry forward the entire set of noninferior vector
+outcomes at each node, because discarding a branch too early might throw away
+a point that would have been noninferior once combined with what happens
+further up the tree. The output of the whole exercise isn't a single decision
+path — it's a noninferior frontier of feasible strategies, and picking a point
+on it is deferred to the decision-maker, exactly as in Tutorial 04.
+</p>
+
+<hr>
+
+<h2>The flood-warning example, and an unexpected finding</h2>
+
+<p>
+Haimes, Li, and Tulsiani's original worked example is a flood-warning system,
+tracking two noncommensurate objectives — loss of life and loss of property,
+including the monitoring system's own cost — with each objective further split
+into its ordinary expected value and, per Tutorial 07, its conditional
+expected value under extreme and catastrophic flooding.
+</p>
+
+<p>
+Their most interesting result has no equivalent in the single-objective case:
+a decision about whether to gather more information before acting — install
+the monitoring system or not — doesn't just refine an existing expected-value
+number. It can change the entire shape of the noninferior solution set,
+introducing genuinely new noninferior alternatives that weren't reachable
+without that information. In a single-objective tree, the classical
+value-of-information result says more information can only help, or leave the
+expected value unchanged, never hurt. In the multiobjective case, "helping"
+isn't a single number moving — it's the frontier itself gaining a new point.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Multi-objective decision trees (MODT) paired with MCDA weighting</strong>
+    — recent applications (for instance, in climate-driven resettlement
+    planning) still build directly on Chankong and Haimes' original
+    noninferior-set theory, generating the Pareto frontier through the tree and
+    then applying a weighting method such as fuzzy TOPSIS to help a
+    decision-maker select a final point — a modern, more systematic version of
+    Tutorial 04's surrogate-worth elicitation.
+  </li>
+  <li>
+    <strong>Multi-objective reinforcement learning and vector-valued MDPs</strong>
+    — for sequential decisions too large to enumerate as an explicit tree,
+    today's computational descendant tracks a Pareto set of value vectors
+    through a Markov decision process instead of a hand-drawn tree, but the
+    underlying idea — carry the noninferior set forward, don't collapse to one
+    number early — is unchanged.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked tree: does monitoring earn its cost?</h2>
+
+<p>
+The snippet below builds a small two-stage version of the Coastal Manager's
+Dilemma: first, decide whether to invest in an early-warning monitoring system;
+then, either commit to a fixed action in advance, or — if monitoring was
+installed — respond contingently once it reports whether an event is
+occurring. Two objectives are tracked throughout: economic cost and public-health
+risk. Notice that all three resulting strategies turn out to be noninferior —
+monitoring doesn't just improve an existing option, it adds a genuinely new one
+to the frontier.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>The noninferior set can grow combinatorially</strong> — every
+  additional decision or chance node multiplies the surviving set of vector
+  outcomes, unlike scalar backward induction, which stays a fixed size at every
+  node.</li>
+  <li><strong>Perfect monitoring is a simplification</strong> — the example
+  below assumes the warning is never wrong. A real early-warning system has
+  false positives and false negatives, which would need their own probability
+  model layered on top before the numbers could be trusted.</li>
+  <li><strong>A frontier still isn't a decision</strong> — as in Tutorial 04,
+  something still has to choose a point on it once the tree is folded back.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> "should we gather more information before
+deciding" is itself a genuinely multiobjective question. Its value doesn't
+show up as one number getting better — it can show up as an entirely new,
+previously unreachable option appearing on the frontier.
+</p>
+`,
+  codeSnippet: `
+# Same hazard probability used throughout this series
+p_event = 0.18
+
+# Two noncommensurate objectives per leaf: economic cost, public-health risk
+leaf = {
+    ("closed",):          {"cost": 8.0,  "risk": 0.5},
+    ("open", "event"):    {"cost": 15.0, "risk": 20.0},
+    ("open", "no_event"): {"cost": -2.0, "risk": 1.0},
+}
+
+def strategy_always(action):
+    """A fixed, non-contingent strategy applied regardless of the outcome."""
+    if action == "closed":
+        return leaf[("closed",)]
+    ev_cost = (p_event * leaf[("open", "event")]["cost"]
+               + (1 - p_event) * leaf[("open", "no_event")]["cost"])
+    ev_risk = (p_event * leaf[("open", "event")]["risk"]
+               + (1 - p_event) * leaf[("open", "no_event")]["risk"])
+    return {"cost": ev_cost, "risk": ev_risk}
+
+def strategy_monitored(monitor_cost=3.0):
+    """An 'experimentation' decision: pay for monitoring, then act
+    contingently on the (here, assumed perfect) warning it provides."""
+    warned_outcome   = leaf[("closed",)]                 # close when warned
+    unwarned_outcome = leaf[("open", "no_event")]        # stay open otherwise
+    ev_cost = (monitor_cost + p_event * warned_outcome["cost"]
+               + (1 - p_event) * unwarned_outcome["cost"])
+    ev_risk = (p_event * warned_outcome["risk"]
+               + (1 - p_event) * unwarned_outcome["risk"])
+    return {"cost": ev_cost, "risk": ev_risk}
+
+candidates = {
+    "Always closed":         strategy_always("closed"),
+    "Always open":           strategy_always("open"),
+    "Monitor, then respond": strategy_monitored(),
+}
+
+def is_dominated(a, b):
+    """True if point b dominates point a on both objectives (minimize both)."""
+    return (b["cost"] <= a["cost"] and b["risk"] <= a["risk"]
+            and (b["cost"] < a["cost"] or b["risk"] < a["risk"]))
+
+print("Noninferior (Pareto) set over {cost, health risk}:")
+for name, point in candidates.items():
+    dominated = any(is_dominated(point, other)
+                     for other_name, other in candidates.items() if other_name != name)
+    tag = "  <- dominated, drop it" if dominated else "  <- noninferior"
+    print(f"  {name:24s} cost={point['cost']:6.2f}  risk={point['risk']:6.2f}{tag}")
+`
+},
+
+{
+  id: 'multiobjective-risk-impact-analysis',
+  title: '09 - Multiobjective Risk Impact Analysis: Closing the Loop',
+  description: 'How Haimes and Leach combined PMRM with multistage impact analysis into MRIAM — and why every tool in this series turns out to be one stage of a single, larger picture.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-24",
+  image: "/images/tutorials/multiobjective-risk-impact.jpg",
+  content: `
+<p>
+Every tutorial in this series so far has quietly treated a decision as a
+single moment: score the risk (01), fold a tree (02), find a compromise on a
+frontier (04), split the extreme-event tail out from the average (07), carry a
+noninferior set through a sequence of choices (08). This chapter is where
+Haimes, with Leach and Gomide, asks the obvious next question: what happens
+across the <em>next several</em> stages, once this decision's consequences
+start propagating?
+</p>
+
+<hr>
+
+<h2>Impact analysis: the trade-off itself can move</h2>
+
+<p>
+Gomide and Haimes' theoretical basis for this chapter introduces a concept
+they call a <strong>stage trade-off</strong> — a genuinely dynamic version of
+Tutorial 04's static noninferior frontier. Instead of one frontier fixed for
+all time, the trade-off between objectives can shift from one stage or time
+period to the next as consequences propagate through the system. The
+Multiobjective, Multistage Impact Analysis Method (MMIAM) is the framework
+built specifically to track that evolving trade-off, rather than freezing it
+at a single snapshot the way every earlier tutorial in this series did.
+</p>
+
+<hr>
+
+<h2>Combining PMRM and MMIAM: MRIAM</h2>
+
+<p>
+Leach and Haimes then did the obvious pairing: carry PMRM's extreme-event
+partitioning (Tutorial 07's <code>f2</code>–<code>f5</code>) through every
+stage of MMIAM's impact propagation, rather than computing it once. They
+called the result the multiobjective risk-impact analysis method (MRIAM), and
+were explicit about why it mattered: decision-makers facing genuinely extreme
+risk and uncertainty are often less interested in finding the mathematically
+optimal strategy than in identifying which strategies they should clearly rule
+out. That's a real shift in posture — from optimizing an objective toward
+eliminating the unacceptable — and it echoes the minimax-regret rule from
+Tutorial 02 more than it echoes expected-value maximization.
+</p>
+
+<hr>
+
+<h2>Relating multiobjective decision trees to MRIAM</h2>
+
+<p>
+The book's own closing move in this part is to show that MRIAM's multistage
+impact propagation can be represented directly as the multiobjective decision
+tree from Tutorial 08: each stage becomes another layer of chance and decision
+nodes, and PMRM's extreme-event measure gets carried through the tree as one
+of the tracked objective components at <em>every</em> stage — not computed
+once at the end, after the fact.
+</p>
+
+<p>
+Zoom out, and this chapter is really the whole series closing its own loop:
+HHM (Tutorial 03) finds what can go wrong; RFRM (Tutorial 06) filters which of
+those scenarios deserve full attention; PMRM (Tutorial 07) gives each
+surviving scenario both an ordinary and an extreme-event risk measure;
+multiobjective decision trees (Tutorial 08) structure the choices around them;
+and MRIAM is what you get when you stop assuming any of that happens only
+once.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Dynamic adaptive policy pathways</strong> — long-horizon coastal
+    and water-infrastructure planning today explicitly models how risk and the
+    menu of available options change stage by stage across a multi-decade
+    planning horizon, revisiting the plan at pre-specified trigger points
+    rather than committing once. It's a direct, now-standard descendant of
+    MMIAM's stage trade-off.
+  </li>
+  <li>
+    <strong>Multi-period CVaR</strong> — Rockafellar and Uryasev's Conditional
+    Value-at-Risk portfolio framework, the same modern formalization of
+    PMRM's <code>f4</code> mentioned in Tutorial 07, has itself been extended
+    into dynamic, multi-period versions for exactly the reason MRIAM extended
+    PMRM: a snapshot tail-risk measure isn't enough once exposure plays out
+    over many periods.
+  </li>
+  <li>
+    <strong>Robust decision-making and scenario discovery</strong> — long-term
+    policy planning today often searches a large space of future scenarios
+    specifically for the ones that make a candidate strategy fail badly, rather
+    than searching for the single optimal strategy. That's Leach and Haimes'
+    "what not to do" framing, made computational.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A worked two-stage tree: when a first hit lowers resilience</h2>
+
+<p>
+The snippet below extends Tutorial 08's single-stage tree to two years. If a
+contamination event occurs in year one, the ecosystem's reduced resilience
+(Tutorial 05's stability property) is modeled as raising <em>both</em> year
+two's hazard probability and its baseline consequences — impact propagating
+forward, exactly what MMIAM is built to represent. Compare the actual
+worst-case (both years hit) against what you'd have naively predicted by just
+doubling year one's extreme-event number: the propagation effect makes the
+real worst case meaningfully higher than that naive estimate.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Every added stage multiplies the path count</strong> — the same
+  combinatorial growth flagged in Tutorial 08 applies here, now across time
+  periods as well as decisions.</li>
+  <li><strong>The propagation model is itself an assumption</strong> — how much
+  a first hit degrades second-stage resilience is exactly the kind of
+  parameter Tutorial 05's uncertainty and sensitivity analysis should be
+  pointed at before it's trusted.</li>
+  <li><strong>This is still a model of a model</strong> — MRIAM formalizes
+  <em>how</em> to track propagating, multiobjective risk. It doesn't supply the
+  actual propagation mechanism for your system; that still has to come from
+  domain knowledge.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> a risk assessment done at a single point in
+time is a photograph of a process that keeps moving. The moment a first bad
+outcome can change the odds or the stakes of the next one, the photograph
+stops being enough — you need the film.
+</p>
+`,
+  codeSnippet: `
+# Stage 1: same hazard as Tutorial 08's "always open" baseline
+p_event_1 = 0.18
+leaf_1 = {
+    "event":    {"cost": 15.0, "risk": 20.0},
+    "no_event": {"cost": -2.0, "risk": 1.0},
+}
+
+def stage_2(prior_event):
+    """Stage 2's hazard AND consequences both worsen if Stage 1 had an
+    event — reduced ecosystem resilience, the impact propagation MMIAM
+    is built to track."""
+    if prior_event:
+        p_event_2 = 0.30
+        leaf_2 = {"event": {"cost": 22.0, "risk": 28.0},
+                  "no_event": {"cost": 0.0, "risk": 3.0}}
+    else:
+        p_event_2 = 0.18
+        leaf_2 = {"event": {"cost": 15.0, "risk": 20.0},
+                  "no_event": {"cost": -2.0, "risk": 1.0}}
+    return p_event_2, leaf_2
+
+# Enumerate all four two-stage paths with joint probability and cumulative impact
+paths = []
+for e1, p1 in [("event", p_event_1), ("no_event", 1 - p_event_1)]:
+    p_event_2, leaf_2 = stage_2(prior_event=(e1 == "event"))
+    for e2, p2 in [("event", p_event_2), ("no_event", 1 - p_event_2)]:
+        joint_p = p1 * p2
+        paths.append({
+            "path": f"{e1} -> {e2}",
+            "p": joint_p,
+            "cost": leaf_1[e1]["cost"] + leaf_2[e2]["cost"],
+            "risk": leaf_1[e1]["risk"] + leaf_2[e2]["risk"],
+        })
+
+ev_cost = sum(p["p"] * p["cost"] for p in paths)
+ev_risk = sum(p["p"] * p["risk"] for p in paths)
+print(f"Two-stage ordinary expected value: cost={ev_cost:.2f}  risk={ev_risk:.2f}")
+
+# PMRM-style extreme-event regime: the single worst path by cumulative risk
+worst = max(paths, key=lambda p: p["risk"])
+print(f"Extreme-event path '{worst['path']}' (p={worst['p']:.1%}): "
+      f"cost={worst['cost']:.2f}  risk={worst['risk']:.2f}")
+
+naive_worst_risk = leaf_1["event"]["risk"] * 2
+print(f"\\nNaive (no-propagation) estimate of worst-case risk: {naive_worst_risk:.2f}")
+print(f"Actual worst-case risk with resilience loss propagated: {worst['risk']:.2f}")
+
+print("\\nAll paths:")
+for p in paths:
+    print(f"  {p['path']:22s} p={p['p']:.3f}  cost={p['cost']:6.2f}  risk={p['risk']:6.2f}")
+`
+},
+
+{
+  id: 'statistics-of-extremes-pmrm',
+  title: '10 - Statistics of Extremes: Extending the PMRM',
+  description: 'Two answers to f4\'s biggest weakness — a formal extreme-value-theory approximation, and a distribution-free bound — plus what it takes to estimate risk beyond anything you\'ve actually observed.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Advanced",
+  createdAt: "2026-07-25",
+  image: "/images/tutorials/statistics-of-extremes.jpg",
+  content: `
+<p>
+Tutorial 07 left <code>f4</code> — PMRM's conditional expectation of the
+extreme-event tail — with an honest weakness: it's sensitive both to where the
+LE/HC boundary is drawn and to which distribution gets assumed for the tail.
+This chapter, and the decade of research behind it, is Haimes and colleagues'
+direct answer to that weakness, worked out in two genuinely different ways.
+</p>
+
+<hr>
+
+<h2>The statistics of extremes, briefly</h2>
+
+<p>
+Classical extreme value theory studies what happens to the maximum of a
+growing sample as the sample size increases. Regardless of the underlying
+distribution (under fairly mild conditions), the properly rescaled maximum
+converges to one of three families — historically called Type I (Gumbel),
+Type II (Fréchet), and Type III (Weibull), today unified as the single
+Generalized Extreme Value (GEV) distribution. Mitsiopoulos, Haimes, and Li
+used this to derive an analytic approximation for <code>f4</code> directly
+from whichever extreme-value type applies — and confirmed it held up across
+normal, Gumbel, Weibull, Pareto, lognormal, and uniform underlying
+distributions. You don't need to know the exact parent distribution, only
+which of three basins of attraction it falls into — a considerably weaker
+requirement.
+</p>
+
+<hr>
+
+<h2>Assessing the tail separately from the body</h2>
+
+<p>
+A companion line of this research made an explicit methodological case: the
+tail of a distribution can, and often should, be assessed separately from its
+central values, rather than fitting one global distribution and reading the
+tail off the same curve used to describe everyday outcomes. The mechanisms
+producing a genuinely extreme event are often different in kind from the
+mechanisms producing ordinary variation, and a distribution chosen to fit the
+bulk of the data has no particular reason to also be correct out in the tail.
+</p>
+
+<hr>
+
+<h2>How sensitive is the approximation itself?</h2>
+
+<p>
+Having an analytic form for <code>f4</code> doesn't end the conversation —
+Romei, Haimes, and Li's follow-up work turned Tutorial 05's sensitivity
+toolkit specifically on <code>f4</code>: how much does the estimate move when
+the extreme-regime boundary shifts, or when the fitted tail parameters carry
+their own uncertainty? An extreme-event risk number without a sensitivity
+analysis attached to it is exactly the kind of false precision Tutorial 05
+warned about.
+</p>
+
+<hr>
+
+<h2>The distribution-free alternative</h2>
+
+<p>
+Mitsiopoulos and Haimes' complementary contribution takes the opposite
+philosophy: instead of committing to any parametric family — even one as
+weakly specified as "which of three extreme-value types" — derive bounds on
+<code>f4</code> that hold across broad classes of distributions. It's a
+trade: a looser estimate, in exchange for not needing to get the distributional
+family right at all. Where data is genuinely too scarce to justify a specific
+tail model, that trade is often the honest one to make.
+</p>
+
+<hr>
+
+<h2>How this is done today</h2>
+
+<ul>
+  <li>
+    <strong>Peaks-over-threshold (POT) with the Generalized Pareto
+    Distribution (GPD)</strong> is the standard operational form of "assess the
+    tail separately" today, used across hydrology, insurance, and finance:
+    declare a high threshold, fit a GPD to what exceeds it, and use that fit —
+    not the whole-dataset distribution — for anything concerning the tail.
+  </li>
+  <li>
+    <strong>Nonstationary extreme value analysis</strong> — the book's own
+    research lineage explicitly raised the question of extremes under
+    nonstationary conditions in the 1990s. Climate science has since made
+    that the normal case rather than the exception: GEV and GPD parameters are
+    now routinely allowed to vary with covariates like time or global
+    temperature, because assuming a fixed, unchanging hazard distribution is
+    no longer considered defensible for design purposes.
+  </li>
+  <li>
+    <strong>Bayesian extreme value analysis</strong> is today's usual
+    alternative to a purely distribution-free bound: put a genuine prior over
+    the tail's shape parameter, and let the posterior widen automatically in
+    exactly the data-scarce regime where a single point estimate would be
+    overconfident.
+  </li>
+</ul>
+
+<hr>
+
+<h2>The real payoff: saying something beyond what you've observed</h2>
+
+<p>
+The most useful property of a fitted extreme-value model isn't a smaller
+error bar at a threshold you already have data for — it's the ability to say
+anything at all about a threshold you don't. The snippet below fits a GPD to
+a modest sample's moderate tail, then extrapolates the fitted model out to a
+threshold more extreme than anything in the sample. The naive empirical
+approach has nothing to offer at that point — no observations, no answer — while
+the extrapolated GPD estimate lands in the right neighborhood of a reference
+value computed from a vastly larger sample.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Small tail samples make the shape parameter unstable</strong> —
+  fitting a two-parameter GPD to a handful of exceedances can add more
+  variance than it removes; the parametric approach's advantage shows up in
+  its ability to extrapolate, not automatically in a tighter estimate at
+  thresholds you already have data for.</li>
+  <li><strong>Extrapolation assumes the extreme-value type doesn't change</strong>
+  — nothing guarantees the same tail behavior continues past the largest value
+  you've actually seen. That assumption is the whole basis for the
+  extrapolation, and it deserves to be stated as an assumption, not a fact.</li>
+  <li><strong>Nonstationarity breaks a fitted tail model quietly</strong> — a
+  GPD fit to last decade's exceedances describes last decade's hazard. If the
+  underlying process is genuinely shifting, that fit doesn't automatically
+  update itself.</li>
+</ul>
+
+<p>
+<strong>Key principle:</strong> the whole point of a statistically grounded
+tail model is to have something honest to say about events more extreme than
+any you've recorded. If a method can only describe the extremes you've already
+observed, it isn't adding anything a plain average couldn't already tell you.
+</p>
+`,
+  codeSnippet: `
+import numpy as np
+from scipy import stats
+
+rng = np.random.default_rng(0)
+
+# The "true" damage-generating process (unknown to the analyst in practice)
+true_dist = stats.lognorm(s=0.6, scale=np.exp(1.95))
+
+# Reference f4 at a genuinely extreme threshold, from an enormous sample --
+# stands in for "the real answer," not something available in practice
+big_sample = true_dist.rvs(20_000_000, random_state=np.random.default_rng(1))
+extreme_threshold = np.quantile(big_sample, 0.999)
+true_f4_extreme = big_sample[big_sample > extreme_threshold].mean()
+
+# A realistic field sample: enough for a decent tail fit, but its own
+# maximum doesn't reach anywhere near the extreme threshold above
+n = 2000
+sample = true_dist.rvs(n, random_state=rng)
+fit_threshold = np.quantile(sample, 0.95)          # a moderate threshold, in-sample
+exceed = sample[sample > fit_threshold] - fit_threshold
+
+print(f"Field sample: n={n}, max observed value = {sample.max():.2f}")
+print(f"Extreme threshold of interest: {extreme_threshold:.2f} "
+      f"(never observed in this sample)")
+
+# Naive empirical approach: can only average what it actually has
+beyond_max = sample[sample > extreme_threshold]
+naive = "undefined -- no observations that extreme" if len(beyond_max) == 0 else f"{beyond_max.mean():.2f}"
+print(f"Naive empirical f4 at the extreme threshold: {naive}")
+
+# GPD/EVT approach: fit once to the moderate, in-sample tail, then
+# extrapolate using the GPD's threshold-stability property (scale grows
+# linearly with the threshold; shape stays fixed)
+xi, loc, sigma = stats.genpareto.fit(exceed, floc=0)
+sigma_at_u = sigma + xi * (extreme_threshold - fit_threshold)
+gpd_f4_extreme = extreme_threshold + sigma_at_u / (1 - xi) if xi < 1 else np.nan
+
+print(f"GPD-extrapolated f4 at the extreme threshold: {gpd_f4_extreme:.2f}  "
+      f"(fitted shape={xi:.3f}, scale={sigma:.2f})")
+print(f"Reference 'true' f4 at that threshold: {true_f4_extreme:.2f}")
+`
+},
+
+{
+  id: 'systems-based-guiding-principles',
+  title: '11 - Ten Systems-Based Guiding Principles: Closing the Loop',
+  description: 'Haimes\' 2012 distillation of the whole discipline into ten principles, validated against the FAA\'s NextGen system of systems — and, as it turns out, a near-perfect map of everything covered in this series.',
+  language: Language.PYTHON,
+  category: "Risk & Decision Analysis",
+  level: "Intermediate to Advanced",
+  createdAt: "2026-07-26",
+  image: "/images/tutorials/guiding-principles.jpg",
+  content: `
+<p>
+In 2012, after three decades of methodology — HHM, PMRM, MMIAM, decision
+trees, and everything built on top of them — Haimes distilled the whole
+discipline down to ten guiding principles, and stress-tested them against one
+of the most complex system-of-systems undertakings around: the FAA's Next
+Generation Air Transportation System (NextGen) modernization. It's a fitting
+place to close this series, because — almost without planning it — each
+principle turns out to map onto one of the tutorials already written here.
+</p>
+
+<hr>
+
+<h2>The ten principles, and where they already showed up</h2>
+
+<ol>
+  <li>
+    <strong>Holism is what risk analysis and systems engineering share.</strong>
+    Neither discipline means much applied to a component in isolation — both
+    only make sense applied to the whole system. (Tutorial 01)
+  </li>
+  <li>
+    <strong>The process has to be systemic and integrated</strong> — treating
+    identification, filtering, modeling, deciding, and communicating as
+    separate, disconnected steps defeats the purpose. RFRM's eight phases exist
+    specifically to keep that chain from fragmenting. (Tutorial 06)
+  </li>
+  <li>
+    <strong>Models and their state variables are central to any quantitative
+    risk claim.</strong> Every number this series produced — a probability, a
+    payoff, a frontier — came from a model with explicit assumptions behind it.
+    Worth naming honestly: this series skipped the book's own chapter on
+    modeling itself (Chapter 2), and this principle is a reminder that
+    everything downstream inherits whatever that unexamined choice got right
+    or wrong.
+  </li>
+  <li>
+    <strong>Complex systems of systems need more than one model</strong> to
+    capture more than one legitimate perspective on the same system. This is
+    HHM's entire premise. (Tutorial 03)
+  </li>
+  <li>
+    <strong>Meta-modeling and subsystem integration have to be derived from the
+    system's own intrinsic states</strong> — how one subsystem's failure
+    becomes part of the next subsystem's actual starting condition. This is
+    exactly what the resilience-loss propagation in the two-stage tree was
+    modeling. (Tutorial 09)
+  </li>
+  <li>
+    <strong>Multiple conflicting, competing objectives are inherent</strong> to
+    risk management, not an edge case to special-case around. (Tutorials 04
+    and 08)
+  </li>
+  <li>
+    <strong>Risk analysis must account for both epistemic and aleatory
+    uncertainty</strong> — and treat them differently, since only one of them
+    shrinks with better data. (Tutorial 05)
+  </li>
+  <li>
+    <strong>Risk analysis must account for low-probability, high-consequence
+    events</strong> specifically, not just fold them into an average. (Tutorials
+    07 and 10)
+  </li>
+  <li>
+    <strong>The time frame is central to quantitative risk analysis</strong> —
+    a risk assessed at a single moment is a photograph of something that keeps
+    moving. (Tutorial 09)
+  </li>
+  <li>
+    <strong>Risk analysis must be holistic, adaptive, incremental, and
+    sustained</strong> — supported by real data collection, real metrics of
+    progress, and real criteria for acting on what's found, not a one-time
+    report. This is RFRM's operational feedback phase, generalized into a
+    standing discipline rather than a single study. (Tutorial 06, and really
+    the throughline of the whole series)
+  </li>
+</ol>
+
+<hr>
+
+<h2>Why the FAA case study matters</h2>
+
+<p>
+Haimes didn't just propose these ten principles in the abstract — he
+validated them against NextGen, a real, massive, genuinely complex
+modernization of the entire U.S. air traffic system, spanning agencies,
+contractors, decades, and interdependent technologies. The point of testing
+principles against a system that large is exactly the point of this series'
+running example: a coastal water-quality monitoring program is also a system
+of systems — satellites, in-situ sensors, predictive models, health agencies,
+and the people who act on what all of that reports. The same ten principles
+apply to it without needing to be rewritten.
+</p>
+
+<hr>
+
+<h2>How this shows up in current practice</h2>
+
+<ul>
+  <li>
+    <strong>Principle-based governance for complex systems</strong> — modern
+    risk frameworks for cyber-physical and AI systems increasingly codify a
+    short list of guiding principles rather than a single rigid checklist,
+    precisely because a system of systems changes faster than any specific
+    checklist can keep up with.
+  </li>
+  <li>
+    <strong>Digital twins</strong> (Tutorial 01) are today's most literal
+    embodiment of principles 3 through 5 at once: multiple linked models, each
+    representing a different subsystem or perspective, integrated around the
+    real system's actual current state, continuously rather than as a one-time
+    exercise.
+  </li>
+  <li>
+    <strong>Production ML monitoring practice</strong> — model cards,
+    continuous evaluation, drift detection — is principle 10 applied
+    specifically to the calibrated classifiers this series leaned on
+    throughout: a model deployed once and never revisited violates this
+    principle just as surely as a risk assessment filed away and forgotten
+    does.
+  </li>
+</ul>
+
+<hr>
+
+<h2>A closing audit, in code</h2>
+
+<p>
+Rather than another numerical simulation, this closing snippet is a literal
+audit: the ten principles, mapped back to exactly where each one appeared in
+this series — a study guide as much as a piece of code, in keeping with a
+chapter that's fundamentally about principles rather than a new quantitative
+method.
+</p>
+
+<hr>
+
+<h2>Limitations to keep in mind</h2>
+
+<ul>
+  <li><strong>Haimes himself didn't claim completeness</strong> — the original
+  paper explicitly frames these ten as a starting point for discussion, not a
+  finished, closed list.</li>
+  <li><strong>Principles aren't a substitute for the methods</strong> — knowing
+  that "multiple conflicting objectives are inherent" doesn't trade off two
+  objectives for you; Tutorial 04's actual machinery still has to do that
+  work.</li>
+  <li><strong>A checklist can create false confidence</strong> — ticking off
+  ten principles is not the same as having correctly applied any one of them
+  well. The principles say what to attend to, not that attending to it was
+  done right.</li>
+</ul>
+
+<p>
+<strong>Key principle</strong> (fittingly, the last one of this series): risk
+analysis that stops after a single report is not holistic, adaptive, or
+sustained — it's a snapshot mistaken for a discipline. Everything built across
+these eleven tutorials is meant to be revisited as the system, the data, and
+the stakes keep changing, not filed away as finished.
+</p>
+`,
+  codeSnippet: `
+# The ten guiding principles (Haimes, 2012), paraphrased, mapped back to
+# where each one showed up earlier in this tutorial series.
+principles = [
+    ("Holism bridges risk analysis and systems engineering",
+     "01 - Systems & Risk Analysis"),
+    ("The whole risk process must be systemic and integrated, not disconnected steps",
+     "06 - Risk Filtering, Ranking, and Management (RFRM)"),
+    ("Models and their state variables are central to any quantitative risk claim",
+     "01 - Systems & Risk Analysis (Ch.2 on modeling itself wasn't covered)"),
+    ("Complex systems of systems need multiple models for multiple perspectives",
+     "03 - Hierarchical Holographic Modeling"),
+    ("Meta-modeling and subsystem integration must derive from the system's own intrinsic states",
+     "09 - Multiobjective Risk Impact Analysis (MRIAM)"),
+    ("Multiple conflicting, competing objectives are inherent to risk management",
+     "04 - Multiobjective Trade-off / 08 - Multiobjective Decision Trees"),
+    ("Risk analysis must account for both epistemic and aleatory uncertainty",
+     "05 - Uncertainty and Sensitivity Analysis"),
+    ("Risk analysis must account for low-probability, high-consequence events",
+     "07 - Extreme Events & PMRM / 10 - Statistics of Extremes"),
+    ("The time frame is central to quantitative risk analysis",
+     "09 - Multiobjective Risk Impact Analysis (MRIAM)"),
+    ("Risk analysis must be holistic, adaptive, incremental, and sustained",
+     "06 - RFRM's operational feedback phase, and this series as a whole"),
+]
+
+print(f"{'#':>2}  {'Principle':<66} Covered in")
+print("-" * 100)
+for i, (statement, tutorial) in enumerate(principles, start=1):
+    print(f"{i:2d}  {statement:<66} {tutorial}")
+`
+},
+
 ];

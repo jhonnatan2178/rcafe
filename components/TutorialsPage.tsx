@@ -3,9 +3,14 @@ import { TutorialCard } from "./TutorialCard";
 
 function TutorialsPage() {
 
-  // Obtener categorías únicas
+  // Categorías únicas — se excluye Risk & Decision Analysis, que ahora
+  // vive en su propia sección (/risk-analysis)
   const categories = Array.from(
-    new Set(TUTORIALS.map(t => t.category))
+    new Set(
+      TUTORIALS
+        .filter(t => t.category !== "Risk & Decision Analysis")
+        .map(t => t.category)
+    )
   );
 
   return (

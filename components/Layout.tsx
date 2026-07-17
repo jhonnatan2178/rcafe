@@ -40,6 +40,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </Link>
 
             <Link
+              to="/risk-analysis"
+              className="hover:text-amber-400 transition-colors"
+            >
+              Risk Analysis
+            </Link>
+
+            <Link
               to="/"
               className="hover:text-emerald-400 transition-colors"
             >
