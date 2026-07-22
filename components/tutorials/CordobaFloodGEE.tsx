@@ -501,6 +501,7 @@ export default function CordobaFloodGEE() {
       </Callout>
 
       <a href="https://colab.research.google.com/drive/1mJ0gIApV1eIfHN3rc2DVm0Wksk_vChwk?usp=sharing"
+      https://colab.research.google.com/github/jhonnatan2178/rcafe/blob/main/notebooks/cordoba-floods-gee.ipynb"
         target="_blank" rel="noopener noreferrer" style={s.colabBtn}>
         🚀 Open in Google Colab
       </a>
